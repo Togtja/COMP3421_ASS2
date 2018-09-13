@@ -1,0 +1,5 @@
+Git commands:
+git pull 		(Should be done before you start working, and before pushing work)
+git status		(See what files you have changed(in red), and which is in add buffer(in green))
+git commit -m "Message" (Send it to the commit "buffer?" and add a quick messgae with the changes, a one liner)
+git push 		(pushes the changes, please do a git pull before doing this, in case something has been changed)
