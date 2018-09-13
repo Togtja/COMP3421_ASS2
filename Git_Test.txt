@@ -1,5 +1,7 @@
 Git commands:
 git pull 		(Should be done before you start working, and before pushing work)
 git status		(See what files you have changed(in red), and which is in add buffer(in green))
+git add <filename>	(Add files to the "add buffer?")
+git rm <filename> 	(Remove files you have deleted in your local repo, to the master repo)
 git commit -m "Message" (Send it to the commit "buffer?" and add a quick messgae with the changes, a one liner)
 git push 		(pushes the changes, please do a git pull before doing this, in case something has been changed)
