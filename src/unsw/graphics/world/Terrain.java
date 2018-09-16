@@ -98,7 +98,28 @@ public class Terrain {
         float altitude = 0;
 
         // TODO: Implement this
+        // ceilf() to round up 
+        // floorf() to round down 
+        // roundf() to round 
         
+        // check if both x and z are ints 
+        if ((roundf(x) == x) && (roundf(z) == z){
+        	// dont need to linear interpolate, altitude already stored 
+        	altitude = altitudes[x][z];
+        } else {
+        	// non int points 
+        	// find closest int points in x and z 
+            int xLow = floorf(x), xHigh = ceilf(x);
+            int zLow = floorf(z), zHigh = ceilf(z);
+            int depth0 = altitudes[xLow][zLow];
+            int depth1 = altitudes[xLow][zHigh];
+            int depth2 = altitudes[xHigh][zLow];
+            int depth3 = altitudes[xHigh][zHigh];
+            
+            float R1 = bilinearInterp(z, zLow, zHigh, depth0, depth1);
+            float R2 = bilinearInterp(z, zLow, zHigh, depth2, depth3);
+            altitude = bilinearInterp(x, xLow, XHigh, R1, R2);
+        }
         return altitude;
     }
 
@@ -125,6 +146,20 @@ public class Terrain {
     public void addRoad(float width, List<Point2D> spine) {
         Road road = new Road(width, spine);
         roads.add(road);        
+    }
+    
+    /**
+     * equation for one step of bilinear interpolation 
+     * 
+     * @param w
+     * @param w0
+     * @param w1
+     * @param depth0
+     * @param depth1
+     * @return
+     */
+    public float bilinearInterp(w, w0, w1, depth0, depth1) {
+    	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
     }
 
 }
