@@ -96,10 +96,7 @@ public class Terrain {
         float altitude = 0;
 
         // TODO: Implement this
-        // ceilf() to round up 
-        // floorf() to round down 
-        // roundf() to round 
-        
+        /*         * if (x >= width || z >= width) {        	return 0;        }        */
         // check if both x and z are ints 
         if ((Math.round(x) == x) && (Math.round(z) == z)){
         	// dont need to linear interpolate, altitude already stored 
