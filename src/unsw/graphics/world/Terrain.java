@@ -1,6 +1,4 @@
-package unsw.graphics.world;
-
-
+package unsw.graphics.world;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,22 +101,22 @@ public class Terrain {
         // roundf() to round 
         
         // check if both x and z are ints 
-        if ((roundf(x) == x) && (roundf(z) == z){
+        if ((Math.round(x) == x) && (Math.round(z) == z)){
         	// dont need to linear interpolate, altitude already stored 
-        	altitude = altitudes[x][z];
+        	altitude = altitudes[(int) x][(int) z];
         } else {
         	// non int points 
         	// find closest int points in x and z 
-            int xLow = floorf(x), xHigh = ceilf(x);
-            int zLow = floorf(z), zHigh = ceilf(z);
-            int depth0 = altitudes[xLow][zLow];
-            int depth1 = altitudes[xLow][zHigh];
-            int depth2 = altitudes[xHigh][zLow];
-            int depth3 = altitudes[xHigh][zHigh];
+            int xLow = (int) Math.floor(x), xHigh = (int) Math.ceil(x);
+            int zLow = (int) Math.floor(z), zHigh = (int) Math.ceil(z);
+            float depth0 = altitudes[xLow][zLow];
+            float depth1 = altitudes[xLow][zHigh];
+            float depth2 = altitudes[xHigh][zLow];
+            float depth3 = altitudes[xHigh][zHigh];
             
             float R1 = bilinearInterp(z, zLow, zHigh, depth0, depth1);
             float R2 = bilinearInterp(z, zLow, zHigh, depth2, depth3);
-            altitude = bilinearInterp(x, xLow, XHigh, R1, R2);
+            altitude = bilinearInterp(x, xLow, xHigh, R1, R2);
         }
         return altitude;
     }
@@ -158,7 +156,7 @@ public class Terrain {
      * @param depth1
      * @return
      */
-    public float bilinearInterp(w, w0, w1, depth0, depth1) {
+    public float bilinearInterp(float w, int w0, int w1, float depth0, float depth1) {
     	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
     }
 
