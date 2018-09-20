@@ -9,3 +9,7 @@ For Assignment:
 		- Vertex shader - bilinear interpolation, foreshortening 
 - Animated textures: make sure you don't load the textures every frame - load at start, swap out when needed 
 - Normal Mapping: apply to interpolated normals to create illusion of bumpiness to a rough surface texture on a smooth flat surface
+- Terrain: write your own code to generate the indices for the terrain. 
+	- Think how to divide the terrain up into triangles
+		- First thinking in terms of squares. How could you divide the terrain up into squares? 
+		- Then dividing it up into triangles is just a matter of splitting each square in two.
