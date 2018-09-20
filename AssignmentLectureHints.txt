@@ -1,0 +1,11 @@
+For Assignment: 
+
+- Map texture to terrain: GL_REPEAT 
+- Generating texture coordinates, use for mesh in assignment: TriangleMesh 
+- Textures and shapes provided for trees - just need to position them and load them to assignment 
+- glsl code:
+	- Add a second light to shaders = two sets of separate lighting equations 
+	- Small change to test Phong Vertex Shaders - copy and then make the small change 
+		- Vertex shader - bilinear interpolation, foreshortening 
+- Animated textures: make sure you don't load the textures every frame - load at start, swap out when needed 
+- Normal Mapping: apply to interpolated normals to create illusion of bumpiness to a rough surface texture on a smooth flat surface

@@ -95,7 +95,7 @@ public class Terrain {
     public float altitude(float x, float z) {
         float altitude = 0;
 
-        // TODO: Implement this
+        // TODO: Implement this                // do we need to loop through the array to fins the closest x / y values to the point and then use         // the index and surrounding indexes  ?                
         /*         * if (x >= width || z >= width) {        	return 0;        }        */
         // check if both x and z are ints 
         if ((Math.round(x) == x) && (Math.round(z) == z)){
