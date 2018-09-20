@@ -13,19 +13,19 @@ import unsw.graphics.geometry.Point3D;
 
 
 
-public class Camera implements KeyListener {
+public class Camera implements  KeyListener {
 
     private Point3D myPos; //Should maybe point 3D
     private float myAngle; //
     private float myScale; //
 
     public Camera() {
-    	//Some defaul Values
+    	//Some default Values
     	myPos = new Point3D(1,1,1);
         myAngle = 0;
         myScale = 10;
     }
-    
+
     public void draw(GL3 gl, CoordFrame3D frame) {
     	CoordFrame3D cameraFrame = frame.translate(myPos)
                 .rotateZ(myAngle)

@@ -1,6 +1,6 @@
 For Assignment: 
 
-- Map texture to terrain: GL_REPEAT 
+- Map texture to terrain: GL_REPEAT (Our Tut said you might want to try GL_MIRRORED)
 - Generating texture coordinates, use for mesh in assignment: TriangleMesh 
 - Textures and shapes provided for trees - just need to position them and load them to assignment 
 - glsl code:

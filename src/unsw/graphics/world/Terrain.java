@@ -1,8 +1,7 @@
 package unsw.graphics.world;
 
 import java.util.ArrayList;
-import java.util.List;import com.jogamp.opengl.GL3;import unsw.graphics.CoordFrame2D;import unsw.graphics.CoordFrame3D;import unsw.graphics.Vector3;
-import unsw.graphics.geometry.Point2D;import unsw.graphics.geometry.TriangleFan3D;
+import java.util.List;import com.jogamp.opengl.GL3;import unsw.graphics.CoordFrame2D;import unsw.graphics.CoordFrame3D;import unsw.graphics.Vector3;import unsw.graphics.geometry.LineStrip3D;import unsw.graphics.geometry.Point2D;import unsw.graphics.geometry.TriangleFan3D;
 
 
 
@@ -18,7 +17,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
-    private Vector3 sunlight;        private TriangleFan3D tri3D; 
+    private Vector3 sunlight;        private LineStrip3D tri3D; 
 
     /**
      * Create a new terrain
@@ -153,5 +152,5 @@ public class Terrain {
      */
     public float bilinearInterp(float w, int w0, int w1, float depth0, float depth1) {
     	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
-    }        public void draw(GL3 gl, CoordFrame3D frame) {        tri3D.draw(gl, frame);    }
+    }    /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {        tri3D.draw(gl, frame);    }
 }
