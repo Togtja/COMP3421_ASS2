@@ -11,7 +11,7 @@ import unsw.graphics.Application3D;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Shader;
-import unsw.graphics.examples.person.Camera;
+import unsw.graphics.world.Camera;
 
 
 
