@@ -19,5 +19,9 @@ public class Tree {
         return position;
     }
     
+    public void drawTree() {
+    	
+    }
+    
 
 }
