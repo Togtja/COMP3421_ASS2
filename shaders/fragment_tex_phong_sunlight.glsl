@@ -6,7 +6,8 @@ uniform vec4 input_color;
 uniform mat4 view_matrix;
 
 // Light properties
-uniform vec3 lightDir;
+//uniform vec3 lightPos; // no light pos, should be uniform, just shift vector to correct position
+uniform vec3 lightVec;
 uniform vec3 lightIntensity;
 uniform vec3 ambientIntensity;
 
@@ -19,14 +20,15 @@ uniform float phongExp;
 uniform sampler2D tex;
 
 in vec4 viewPosition;
-in vec3 m;
+in vec3 m;     // vertex normal in view coordinates
+
 
 in vec2 texCoordFrag;
 
 void main()
 {
     // Compute the s, v and r vectors
-    vec3 s = normalize(view_matrix*vec4(lightDir,0) - viewPosition).xyz; // changed from 1 to 0 for vec4 lightDir vector
+    vec3 s = normalize(lightVec); // source vector does not change for sunlight based on light pos
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
 
@@ -44,5 +46,3 @@ void main()
 
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
 }
-
-void calcOutputColor(uniform mat4 viewMatrix, uniform vec3 lightDirection, uniform vec3 lightIntensity, )
