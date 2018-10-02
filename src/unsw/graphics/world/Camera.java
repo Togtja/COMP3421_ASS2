@@ -16,25 +16,18 @@ import unsw.graphics.geometry.Point3D;
 public class Camera implements  KeyListener {
 
     private Point3D myPos; //Should maybe point 3D
-    private float myAngle; //
-    private float myScale; //
+    private float myAngleX;
+    private float myAngleY;
+    private float myAngleZ; 
+    private float myScale; 
 
     public Camera() {
     	//Some default Values
-    	myPos = new Point3D(0,0,2);
-        myAngle = 0;
-        myScale = 2;
+    	myPos = new Point3D(0,0.5f,4.5f);
+    	myAngleX = 0; myAngleY = 0;
+    	myAngleZ = 0; 
+        myScale = 1;
     }
-
-    public void draw(GL3 gl, CoordFrame3D frame) {
-    	CoordFrame3D cameraFrame = frame.translate(myPos)
-                .rotateZ(myAngle)
-                .scale(myScale, myScale, myScale);
-    	LineStrip3D camera = new LineStrip3D(1,1,1, -1,1,1, -1,-1,1, 1,-1,1, 1,1,1,
-    										 1,1,-1, -1,1,-1, -1,-1,-1, 1,-1,-1, 1,1,-1);
-        camera.draw(gl, cameraFrame);
-    }
-
     /**
      * Set the view transform
      * 
@@ -45,43 +38,80 @@ public class Camera implements  KeyListener {
     public CoordFrame3D setView(GL3 gl) {
         CoordFrame3D viewFrame = CoordFrame3D.identity()
                 .scale(1/myScale, 1/myScale, 1/myScale)
-                .rotateZ(-myAngle)
+                .rotateZ(-myAngleZ)                
+                .rotateX(-myAngleX)
+                .rotateY(-myAngleY)
                 .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
         return viewFrame;
     }
-
+    //How to debug control
+    // w moves you closer aka +z
+    // s move you further away aka -z
+    // a moves you to the left aka -x
+    // d moves you to the left aka +x
+    // q/e rotates with z
+    // shift + w/s rotates x 
+    // shift + a/d rotates y
+    // shift + q/e scales uniformly
+    
     @Override
     public void keyPressed(KeyEvent e) {
         switch(e.getKeyCode()) {
-        case KeyEvent.VK_LEFT:
+        case KeyEvent.VK_A:
             if (e.isShiftDown())
-                myAngle += 5;
+                myAngleY += 5;
             else
                 myPos = new Point3D(myPos.getX() - 0.1f, myPos.getY(), myPos.getZ());  
             break;
             
-        case KeyEvent.VK_RIGHT:
-            if (e.isShiftDown())
-                myAngle -= 5;
+        case KeyEvent.VK_D:
+            if (e.isShiftDown()) {
+                myAngleY -= 5; System.out.print("WE HIT\n"); }
             else
                 myPos = new Point3D(myPos.getX() + 0.1f, myPos.getY(), myPos.getZ());                
             break;
 
-        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
             if (e.isShiftDown())
-                myScale *= 1.1;
+            	myAngleX -= 5;
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() - 0.1f, myPos.getZ()); //Might want to change z instead
+                myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() + 0.1f); //Might want to change z instead
             break;
 
-        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
             if (e.isShiftDown())
-                myScale /= 1.1;
+            	myAngleX += 5;
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() + 0.1f, myPos.getZ());
+                myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() - 0.1f);
             break;
-        }
+        case KeyEvent.VK_Q:
+        	 if (e.isShiftDown())
+        		 myScale *= 1.1;
+             else
+            	 myAngleZ -=5;
+        	 break;
+      	case KeyEvent.VK_E:
+      		if (e.isShiftDown())
+      			myScale /= 1.1;
+      		else
+      			myAngleZ +=5;
+      		break;
+        
+        //Delivery keys
+  		case KeyEvent.VK_UP:
+  			myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() - 0.1f);
+  			break;
+  		case KeyEvent.VK_DOWN:
+  			myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() + 0.1f);
+  			break;
+  		case KeyEvent.VK_LEFT:
+  			myAngleY +=5;
+  			break;
+  		case KeyEvent.VK_RIGHT:
+  			myAngleY -=5;
+  			break;
+       }
 
     }
 

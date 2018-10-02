@@ -92,7 +92,8 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Shader.setPenColor(gl, Color.MAGENTA);
         
         CoordFrame3D frame = camera.setView(gl);
-        drawTerrain(gl, frame.rotateY(rotationY));
+        //drawTerrain(gl, frame.rotateY(rotationY));
+        terrain.draw(gl, frame);
         
         rotationY += 1;
     }

@@ -17,7 +17,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
-    private Vector3 sunlight;        private TriangleFan3D tri3D;     
+    private Vector3 sunlight;        private LineStrip3D tri3D;     
 
     /**
      * Create a new terrain
@@ -31,7 +31,7 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
-        this.sunlight = sunlight;                //Creates the terrain points        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            }        }                tri3D = new TriangleFan3D(points);
+        this.sunlight = sunlight;        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            }        }                tri3D = new LineStrip3D(points);
     }
 
     public List<Tree> trees() {

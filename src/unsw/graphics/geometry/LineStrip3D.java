@@ -44,7 +44,7 @@ public class LineStrip3D {
      * 
      * Argument 2*i and 2*i+1 form point i on the strip. e.g.
      * 
-     * <code>new LineStrip3D(0,0,0, 1,0,,0 1,1,0);</code>
+     * <code>new LineStrip3D(0,0,0, 1,0,0, 1,1,0);</code>
      * 
      * creates a line strip going from (0,0,0) to (1,0,0) to (1,1,0).
      * 
@@ -55,7 +55,7 @@ public class LineStrip3D {
             throw new IllegalArgumentException("Odd number of arguments");
         List<Point3D> points = new ArrayList<Point3D>();
         for (int i = 0; i < values.length / 3; i++) {
-            points.add(new Point3D(values[2*i], values[2*i + 1], values[2*i + 3]));
+            points.add(new Point3D(values[3*i], values[3*i + 1], values[3*i + 2]));
         }
         this.points = points;
     }
