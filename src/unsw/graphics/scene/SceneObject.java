@@ -6,6 +6,9 @@ import java.util.List;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.Matrix3;
+import unsw.graphics.Vector3;
+import unsw.graphics.geometry.Line2D;
 import unsw.graphics.geometry.Point2D;
 
 /**
@@ -97,6 +100,24 @@ public class SceneObject {
      */
     public List<SceneObject> getChildren() {
         return myChildren;
+    }
+    
+    /**
+     * Set the children of this object
+     * 
+     * @return
+     */
+    public void setChildren(ArrayList<SceneObject> children) {
+    	myChildren = children;
+    }
+    
+    /**
+     * Add the child to this object
+     * 
+     * @return
+     */
+    public void addChild(SceneObject child) {
+    	myChildren.add(child);
     }
 
     /**
@@ -271,19 +292,59 @@ public class SceneObject {
         // TODO: Compute the coordinate frame for this object
         // draw the object (Call drawSelf() to draw the object itself) 
         // and all its children recursively
-       
+
         
+        // Compute the coordinate frame for the person
+        CoordFrame2D objectFrame = frame
+                .translate(myTranslation.getX(), myTranslation.getY())
+                .rotate(myRotation)
+                .scale(myScale, myScale);
+
+        // draw self 
+        drawSelf(gl, objectFrame);
+
+        // recursively call draw function for every child of object 
+        List<SceneObject> children = new ArrayList<SceneObject>(myChildren);
+        for (SceneObject so : children) {	// recursively draw tree 
+            so.draw(gl,objectFrame);         		
+        }
+
     }
 
     /**
      * Compute the object's position in world coordinates
      * 
-     * @return a point in world coordinats
+     * @return a point in world coordinates
      */
+
+    
     public Point2D getGlobalPosition() {
-        // TODO: Complete this
-        return null;
+        // TODO: Complete this    	
+    	
+    	// check if there is a parent to the node 
+    	if(getParent() == null) {
+    		// if parent is null, this is the root 
+    		return myTranslation; // return root translation
+    	}
+    	else {    		
+    		// calculate parent translation matrix 
+    		CoordFrame2D parentGlobalFrame = CoordFrame2D.identity()
+    				.translate(myParent.getGlobalPosition().getX(), myParent.getGlobalPosition().getY())
+    				.rotate(myParent.getGlobalRotation())
+    				.scale(myParent.getGlobalScale(), myParent.getGlobalScale());
+    		Matrix3 parentGlobalMatrix = parentGlobalFrame.getMatrix();
+    		    		
+    		// get local position point in vector form 
+    		Vector3 localPosition = new Vector3(myTranslation.getX(), myTranslation.getY(), 1); 
+    		
+    		// get global position of point by multiplying it by the parent global matrix translation 
+    		Vector3 globalPosition = parentGlobalMatrix.multiply(localPosition);
+    		
+    		// convert vector to point and return global position as a point 
+    		return globalPosition.asPoint2D();
+    	}
     }
+
 
     /**
      * Compute the object's rotation in the global coordinate frame
@@ -293,7 +354,13 @@ public class SceneObject {
      */
     public float getGlobalRotation() {
         // TODO: Complete this
-        return 0;
+    	SceneObject parent = getParent(); // create new object that has parent info 
+    	
+    	if (getParent()!=null) {
+    		return MathUtil.normaliseAngle(parent.getGlobalRotation() + getRotation());
+    	}else { // parent is null, root object, get rotation of root
+    		return getRotation(); 
+    	}
     }
 
     /**
@@ -303,7 +370,13 @@ public class SceneObject {
      */
     public float getGlobalScale() {
         // TODO: Complete this
-        return 1;
+    	SceneObject parent = getParent(); // create new object that has parent info
+    	
+    	if(getParent()!=null) { // parent exists, get global scale 
+    		return parent.getGlobalScale() * getScale();
+    	}else { // parent is null, root object, get scale of root
+    		return getScale(); 
+    	}
     }
 
     /**
@@ -316,10 +389,40 @@ public class SceneObject {
         // when it is reparented. You may need to add code before and/or after 
         // the fragment of code that has been provided - depending on your approach
         
+    	// save global translation of child 
+    	Point2D globalPosition = this.getGlobalPosition();
+    	float globalRotation = this.getGlobalRotation();
+    	float globalScale = this.getGlobalScale();
+    	
+        // save parent global translation 
+        Point2D parentGlobalPosition = parent.getGlobalPosition();
+    	float parentGlobalRotation = parent.getGlobalRotation();
+    	float parentGlobalScale = parent.getGlobalScale();
+    	
+    	// calculate rotation from new parent to object
+    	this.myRotation = MathUtil.normaliseAngle(globalRotation - parentGlobalRotation);
+    	
+    	// calculate scale from new parent to object 
+    	this.myScale = globalScale / parentGlobalScale;
+    	    	
+    	// make inverse matrix for parent global to local 
+    	CoordFrame2D parentInverseFrame = CoordFrame2D.identity()
+    			.scale(1/parentGlobalScale, 1/parentGlobalScale)
+    			.rotate(-1*parentGlobalRotation)
+    			.translate(-1*parentGlobalPosition.getX(), -1*parentGlobalPosition.getY());
+    	Matrix3 parentInverseMatrix = parentInverseFrame.getMatrix();
+    	
+    	// get local translation with new parent 
+    	Vector3 globalPositionPoint = new Vector3(globalPosition.getX(), globalPosition.getY(), 1);
+    	Vector3 localPosition = parentInverseMatrix.multiply(globalPositionPoint);
+    	
+    	// set position of point 
+    	this.myTranslation = localPosition.asPoint2D();
+    	
+    	// update new parent 
         myParent.myChildren.remove(this);
         myParent = parent;
         myParent.myChildren.add(this);
-        
     }
     
 

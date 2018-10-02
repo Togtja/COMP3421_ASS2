@@ -152,5 +152,5 @@ public class Terrain {
      */
     public float bilinearInterp(float w, int w0, int w1, float depth0, float depth1) {
     	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
-    }    /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {        tri3D.draw(gl, frame);    }
+    }        /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {        tri3D.draw(gl, frame);    }
 }
