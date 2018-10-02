@@ -21,9 +21,9 @@ public class Camera implements  KeyListener {
 
     public Camera() {
     	//Some default Values
-    	myPos = new Point3D(1,1,1);
+    	myPos = new Point3D(0,0,2);
         myAngle = 0;
-        myScale = 10;
+        myScale = 2;
     }
 
     public void draw(GL3 gl, CoordFrame3D frame) {
@@ -42,12 +42,13 @@ public class Camera implements  KeyListener {
      * 
      * @param gl
      */
-    public void setView(GL3 gl) {
+    public CoordFrame3D setView(GL3 gl) {
         CoordFrame3D viewFrame = CoordFrame3D.identity()
                 .scale(1/myScale, 1/myScale, 1/myScale)
                 .rotateZ(-myAngle)
                 .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
+        return viewFrame;
     }
 
     @Override
@@ -57,28 +58,28 @@ public class Camera implements  KeyListener {
             if (e.isShiftDown())
                 myAngle += 5;
             else
-                myPos = new Point3D(myPos.getX() - 1, myPos.getY(), myPos.getZ());                
+                myPos = new Point3D(myPos.getX() - 0.1f, myPos.getY(), myPos.getZ());  
             break;
             
         case KeyEvent.VK_RIGHT:
             if (e.isShiftDown())
                 myAngle -= 5;
             else
-                myPos = new Point3D(myPos.getX() + 1, myPos.getY(), myPos.getZ());                
+                myPos = new Point3D(myPos.getX() + 0.1f, myPos.getY(), myPos.getZ());                
             break;
 
         case KeyEvent.VK_DOWN:
             if (e.isShiftDown())
                 myScale *= 1.1;
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() - 1, myPos.getZ()); //Might want to change z instead
+                myPos = new Point3D(myPos.getX(), myPos.getY() - 0.1f, myPos.getZ()); //Might want to change z instead
             break;
 
         case KeyEvent.VK_UP:
             if (e.isShiftDown())
                 myScale /= 1.1;
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() + 1, myPos.getZ());
+                myPos = new Point3D(myPos.getX(), myPos.getY() + 0.1f, myPos.getZ());
             break;
         }
 

@@ -91,9 +91,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 
         Shader.setPenColor(gl, Color.MAGENTA);
         
-        CoordFrame3D frame = CoordFrame3D.identity()
-                .translate(0, 0, -2)
-                .scale(0.5f, 0.5f, 0.5f);
+        CoordFrame3D frame = camera.setView(gl);
         drawTerrain(gl, frame.rotateY(rotationY));
         
         rotationY += 1;
@@ -175,7 +173,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
                 "shaders/fragment_tex_phong_sunlight.glsl");
         shader.use(gl);
         
-        texture = new Texture(gl, "res/textures/airplane.bmp", "bmp", false);
+        texture = new Texture(gl, "res/textures/kittens.jpg", "jpg", false);
 
         
         try {

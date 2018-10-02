@@ -1,7 +1,7 @@
 package unsw.graphics.world;
 
 import java.util.ArrayList;
-import java.util.List;import com.jogamp.opengl.GL3;import unsw.graphics.CoordFrame2D;import unsw.graphics.CoordFrame3D;import unsw.graphics.Vector3;import unsw.graphics.geometry.LineStrip3D;import unsw.graphics.geometry.Point2D;import unsw.graphics.geometry.TriangleFan3D;import unsw.graphics.geometry.TriangleMesh;
+import java.util.List;import com.jogamp.opengl.GL3;import unsw.graphics.CoordFrame2D;import unsw.graphics.CoordFrame3D;import unsw.graphics.Vector3;import unsw.graphics.geometry.LineStrip3D;import unsw.graphics.geometry.Point2D;import unsw.graphics.geometry.Point3D;import unsw.graphics.geometry.TriangleFan3D;import unsw.graphics.geometry.TriangleMesh;
 
 
 
@@ -17,7 +17,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
-    private Vector3 sunlight;        private LineStrip3D tri3D;     
+    private Vector3 sunlight;        private TriangleFan3D tri3D;     
 
     /**
      * Create a new terrain
@@ -31,7 +31,7 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
-        this.sunlight = sunlight;
+        this.sunlight = sunlight;                //Creates the terrain points        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            }        }                tri3D = new TriangleFan3D(points);
     }
 
     public List<Tree> trees() {
@@ -152,5 +152,5 @@ public class Terrain {
      */
     public float bilinearInterp(float w, int w0, int w1, float depth0, float depth1) {
     	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
-    }        /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {        tri3D.draw(gl, frame);    }
+    }        /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {    	//tri3D = new TriangleFan3D(points);        tri3D.draw(gl, frame);    }
 }

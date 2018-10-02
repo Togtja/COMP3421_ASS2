@@ -14,14 +14,14 @@ import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 
 /**
- * A line strip in 2D space.
+ * A line strip in 3D space.
  * 
  * In a line strip, a series of points are joined with a line between each
  * adjacent pair.
  * 
  * This class is mutable, as new points can be added to the end of the strip.
  * 
- * @author Robert Clifton-Everest
+ * 
  *
  */
 public class LineStrip3D {
@@ -44,9 +44,9 @@ public class LineStrip3D {
      * 
      * Argument 2*i and 2*i+1 form point i on the strip. e.g.
      * 
-     * <code>new LineStrip2D(0,0, 1,0, 1,1);</code>
+     * <code>new LineStrip3D(0,0,0, 1,0,,0 1,1,0);</code>
      * 
-     * creates a line strip going from (0,0) to (1,0) to (1,1).
+     * creates a line strip going from (0,0,0) to (1,0,0) to (1,1,0).
      * 
      * @param values
      */
