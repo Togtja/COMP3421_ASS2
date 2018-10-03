@@ -35,7 +35,7 @@ public class Camera implements  KeyListener {
      * 
      * @param gl
      */
-    public CoordFrame3D setView(GL3 gl) {
+    public void setView(GL3 gl) {
         CoordFrame3D viewFrame = CoordFrame3D.identity()
                 .scale(1/myScale, 1/myScale, 1/myScale)
                 .rotateZ(-myAngleZ)                
@@ -43,7 +43,7 @@ public class Camera implements  KeyListener {
                 .rotateY(-myAngleY)
                 .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
-        return viewFrame;
+        //return viewFrame;
     }
     //How to debug control
     // w moves you closer aka +z
@@ -66,8 +66,8 @@ public class Camera implements  KeyListener {
             break;
             
         case KeyEvent.VK_D:
-            if (e.isShiftDown()) {
-                myAngleY -= 5; System.out.print("WE HIT\n"); }
+            if (e.isShiftDown()) 
+                myAngleY -= 5;
             else
                 myPos = new Point3D(myPos.getX() + 0.1f, myPos.getY(), myPos.getZ());                
             break;

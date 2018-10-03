@@ -73,7 +73,7 @@ public class LineStrip3D {
         gl.glBufferData(GL.GL_ARRAY_BUFFER, points.size() * 2 * Float.BYTES,
                 buffer.getBuffer(), GL.GL_STATIC_DRAW);
 
-        gl.glVertexAttribPointer(Shader.POSITION, 2, GL.GL_FLOAT, false, 0, 0);
+        gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
         Shader.setModelMatrix(gl, frame.getMatrix());
         gl.glDrawArrays(GL.GL_LINE_STRIP, 0, points.size());
 

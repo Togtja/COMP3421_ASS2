@@ -44,8 +44,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     
     private String treeFile = "res/models/tree.ply"; 
     
+    //Debug stuff
+    private float rotationZ,rotationY, rotationX;
     
-    private float rotationZ,rotationY;
+    
     private Point3DBuffer vertexBuffer;
     private Point2DBuffer texCoordBuffer;
     private IntBuffer indicesBuffer;
@@ -74,7 +76,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
+        terrain.setTriangle();
+        
     }
+ 
 
 	/*@Override
 	public void display(GL3 gl) {
@@ -98,9 +103,9 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 
         Shader.setPenColor(gl, Color.MAGENTA);
         
-        CoordFrame3D frame = camera.setView(gl);
+        camera.setView(gl);
         //drawTerrain(gl, frame.rotateY(rotationY));
-        terrain.draw(gl, frame.rotateZ(rotationZ).rotateY(rotationY));
+        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ).rotateY(rotationY).rotateX(rotationX));
         rotationY += 1;
         rotationZ += 1;
         
@@ -113,6 +118,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         //Just drawing a standard 2x1 quad.
         quad.draw(gl);
         getDefaultShader().use(gl);*/
+        rotationX += 1;
     }
 
 	@Override
