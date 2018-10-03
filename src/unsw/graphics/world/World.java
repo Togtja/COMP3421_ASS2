@@ -10,8 +10,6 @@ import java.util.Arrays;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
@@ -42,7 +40,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     private TriangleMesh terrainMesh;
     
     
-    private float rotationY;
+    private float rotationZ,rotationY;
     private Point3DBuffer vertexBuffer;
     private Point2DBuffer texCoordBuffer;
     private IntBuffer indicesBuffer;
@@ -85,6 +83,9 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     public void display(GL3 gl) {
         super.display(gl);
         
+        
+        
+        
         Shader.setInt(gl,"tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
@@ -93,9 +94,9 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         
         CoordFrame3D frame = camera.setView(gl);
         //drawTerrain(gl, frame.rotateY(rotationY));
-        terrain.draw(gl, frame);
-        
+        terrain.draw(gl, frame.rotateZ(rotationZ).rotateY(rotationY));
         rotationY += 1;
+        rotationZ += 1;
     }
 
 	@Override
@@ -110,6 +111,23 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 		super.init(gl);
 		getWindow().addKeyListener(camera);
 		getWindow().addKeyListener(this);
+		
+		Shader shader = new Shader(gl, "shaders/vertex_phong.glsl",
+                "shaders/fragment_phong.glsl");
+        shader.use(gl);
+        
+        texture = new Texture(gl, "res/textures/kittens.jpg", "jpg", false);
+		
+		 // Set the lighting properties
+        Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+        Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+        
+        // Set the material properties
+        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+        Shader.setFloat(gl, "phongExp", 16f);
 		
         // textured cube example
         vertexBuffer = new Point3DBuffer(Arrays.asList(
@@ -167,15 +185,6 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indicesName);
         gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer.capacity() * Integer.BYTES,
                 indicesBuffer, GL.GL_STATIC_DRAW);
-		
-        
-        
-        Shader shader = new Shader(gl, "shaders/vertex_tex_phong_sunlight.glsl",
-                "shaders/fragment_tex_phong_sunlight.glsl");
-        shader.use(gl);
-        
-        texture = new Texture(gl, "res/textures/kittens.jpg", "jpg", false);
-
         
         try {
 			terrainMesh = new TriangleMesh("res/models/cube.ply");
@@ -227,34 +236,5 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 		camera.keyReleased(e); // do what camera would do 
 	}
 
-	/*// implement methods to implement MouseListener interface
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}*/	
 }
