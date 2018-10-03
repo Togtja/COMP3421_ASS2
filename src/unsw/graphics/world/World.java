@@ -68,7 +68,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
+        terrain.setTriangle();
+        
     }
+ 
 
 	/*@Override
 	public void display(GL3 gl) {
@@ -92,11 +95,11 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 
         Shader.setPenColor(gl, Color.MAGENTA);
         
-        CoordFrame3D frame = camera.setView(gl);
+        camera.setView(gl);
         //drawTerrain(gl, frame.rotateY(rotationY));
-        terrain.draw(gl, frame.rotateZ(rotationZ).rotateY(rotationY));
-        rotationY += 1;
-        rotationZ += 1;
+        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ).rotateY(rotationY));
+        //rotationY += 1;
+        //rotationZ += 1;
     }
 
 	@Override

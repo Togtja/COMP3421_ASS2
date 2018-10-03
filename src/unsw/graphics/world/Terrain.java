@@ -17,7 +17,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
-    private Vector3 sunlight;       // private LineStrip3D tri3D;     private TriangleFan3D tri3D;     
+    private Vector3 sunlight;        private LineStrip3D tri3D;     //private TriangleFan3D tri3D;     //private TriangleMesh tri3D;    
 
     /**
      * Create a new terrain
@@ -31,9 +31,8 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
-        this.sunlight = sunlight;        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            }        }                //tri3D = new LineStrip3D(points);
-        tri3D = new TriangleFan3D(points);    }
-
+        this.sunlight = sunlight;            }
+    public void setTriangle(){        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            	//System.out.println();            }        }                tri3D = new LineStrip3D(points);        //tri3D = new TriangleFan3D(points);        //tri3D = new TriangleMesh(points);    }
     public List<Tree> trees() {
         return trees;
     }
@@ -152,5 +151,5 @@ public class Terrain {
      */
     public float bilinearInterp(float w, int w0, int w1, float depth0, float depth1) {
     	return (((w-w0)/(w1-w0))*depth1 + ((w1-w)/(w1-w0))*depth0);
-    }        /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */        public void draw(GL3 gl, CoordFrame3D frame) {    	//tri3D = new TriangleFan3D(points);        tri3D.draw(gl, frame);    }        private TriangleMesh makeTerrain(GL3 gl) {        // Make the approximating triangular mesh.        List<Point3D> vertices = new ArrayList<Point3D>();        List<Vector3> normals = new ArrayList<Vector3>();        List<Integer> indices = new ArrayList<Integer>();                        // get vertices and normals         for (int i = 0; i < width; i++) {        	for (int k = 0; k < depth; k++) {        		float j = (float) getGridAltitude(i, k);         		vertices.add(new Point3D(i, j, k));        		normals.add(new Vector3(i, j, k));        	}        }                // get indices         for (int i = 0; i < width; i++) {        	for (int k = 0; k < depth; k++) {        		        		indices.add(i+width*depth);                indices.add((i+1) % width*depth + width*depth);                indices.add(i);        	}        }                TriangleMesh terrain = new TriangleMesh(vertices, normals, indices);                terrain.init(gl);        return terrain;    }        
+    }        /**     * Draw function, that draws the terrain as a TriangleFan3D     *      */    public void draw(GL3 gl, CoordFrame3D frame) {    	//tri3D = new TriangleFan3D(points);        tri3D.draw(gl, frame);    }        private TriangleMesh makeTerrain(GL3 gl) {        // Make the approximating triangular mesh.        List<Point3D> vertices = new ArrayList<Point3D>();        List<Vector3> normals = new ArrayList<Vector3>();        List<Integer> indices = new ArrayList<Integer>();                        // get vertices and normals         for (int i = 0; i < width; i++) {        	for (int k = 0; k < depth; k++) {        		float j = (float) getGridAltitude(i, k);         		vertices.add(new Point3D(i, j, k));        		normals.add(new Vector3(i, j, k));        	}        }                // get indices         for (int i = 0; i < width; i++) {        	for (int k = 0; k < depth; k++) {        		        		indices.add(i+width*depth);                indices.add((i+1) % width*depth + width*depth);                indices.add(i);        	}        }                TriangleMesh terrain = new TriangleMesh(vertices, normals, indices);                terrain.init(gl);        return terrain;    }        
 }
