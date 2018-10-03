@@ -39,8 +39,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     private Camera camera;
     private TriangleMesh terrainMesh;
     
+    //Debug stuff
+    private float rotationZ,rotationY, rotationX;
     
-    private float rotationZ,rotationY;
+    
     private Point3DBuffer vertexBuffer;
     private Point2DBuffer texCoordBuffer;
     private IntBuffer indicesBuffer;
@@ -97,9 +99,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         
         camera.setView(gl);
         //drawTerrain(gl, frame.rotateY(rotationY));
-        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ).rotateY(rotationY));
-        //rotationY += 1;
-        //rotationZ += 1;
+        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ).rotateY(rotationY).rotateX(rotationX));
+        rotationY += 1;
+        rotationZ += 1;
+        rotationX += 1;
     }
 
 	@Override
