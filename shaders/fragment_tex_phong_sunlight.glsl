@@ -25,10 +25,13 @@ in vec3 m;     // vertex normal in view coordinates
 
 in vec2 texCoordFrag;
 
+
+// use view matrix to multiply light vector to convert from camera coords to view coords
+
 void main()
 {
     // Compute the s, v and r vectors
-    vec3 s = normalize(lightVec); // source vector does not change for sunlight based on light pos
+    vec3 s = normalize(-lightVec); // source vector does not change for sunlight based on light pos
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
 

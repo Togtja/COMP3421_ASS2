@@ -37,7 +37,12 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 
     private Terrain terrain;
     private Camera camera;
+    private Tree tree; 
+    
     private TriangleMesh terrainMesh;
+    private TriangleMesh treeMesh; 
+    
+    private String treeFile = "res/models/tree.ply"; 
     
     
     private float rotationZ,rotationY;
@@ -54,6 +59,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     	super("Assignment 2", 600, 600);
         this.terrain = terrain;
         camera = new Camera(); // Creates a camera
+        //treeMesh = new TriangleMesh(treeFile, true, true); // creates a tree 
     }
    
     
@@ -97,6 +103,16 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         terrain.draw(gl, frame.rotateZ(rotationZ).rotateY(rotationY));
         rotationY += 1;
         rotationZ += 1;
+        
+        /*shader.use(gl);
+        
+        //Using a new shader invalidates all the values we've previously provided as uniform inputs.
+        //Need to supply them again.
+        Shader.setViewMatrix(gl, view.getMatrix());
+        
+        //Just drawing a standard 2x1 quad.
+        quad.draw(gl);
+        getDefaultShader().use(gl);*/
     }
 
 	@Override
@@ -129,21 +145,19 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
 		
-        // textured cube example
-        vertexBuffer = new Point3DBuffer(Arrays.asList(
-                new Point3D(-1,-1,1), 
-                new Point3D(-1,1,1),
-                new Point3D(1,-1,1), 
-                new Point3D(1,1,1),
-                new Point3D(1,-1,-1), 
-                new Point3D(1,1,-1),
-                new Point3D(-1,-1,-1), 
-                new Point3D(-1,1,-1),
-                new Point3D(-1,-1,1),  //Repeating the starting vertices 
-                new Point3D(-1,1,1))); // as they have their own tex coords 
-        
-        // textured cube example 
-        texCoordBuffer = new Point2DBuffer(Arrays.asList(
+        /*vertexBuffer = new Point3DBuffer(Arrays.asList(
+				new Point3D(-1,1,1), 
+				new Point3D(-1,1,1),
+				new Point3D(1,-1,1), 
+				new Point3D(1,1,1),
+				new Point3D(1,-1,-1), 
+				new Point3D(1,1,-1),
+				new Point3D(-1,-1,-1), 
+				new Point3D(-1,1,-1),
+				new Point3D(-1,-1,1),  //Repeating the starting vertices 
+				new Point3D(-1,1,1))); // as they have their own tex coords 
+
+		texCoordBuffer = new Point2DBuffer(Arrays.asList(
                 new Point2D(0,0),
                 new Point2D(0,1f),
                 new Point2D(0.25f,0),
@@ -154,7 +168,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
                 new Point2D(0.75f,1f),
                 new Point2D(1,0),
                 new Point2D(1,1f)));
-        
+		
         // textured cube example
         indicesBuffer = GLBuffers.newDirectIntBuffer(new int[] {
             0,2,1,
@@ -165,7 +179,10 @@ public class World extends Application3D implements KeyListener { //, MouseListe
             5,6,7,
             6,8,7,
             7,8,9,
-		});
+		});*/
+        
+
+
 
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
