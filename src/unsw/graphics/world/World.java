@@ -77,7 +77,6 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         World world = new World(terrain);
         world.start();
         terrain.setTriangle();
-        
     }
  
 
@@ -93,10 +92,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 	@Override
     public void display(GL3 gl) {
         super.display(gl);
-        
-        
-        
-        
+
         Shader.setInt(gl,"tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
@@ -105,20 +101,11 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         
         camera.setView(gl);
         //drawTerrain(gl, frame.rotateY(rotationY));
-        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ).rotateY(rotationY).rotateX(rotationX));
+        terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
         rotationY += 1;
-        rotationZ += 1;
-        
-        /*shader.use(gl);
-        
-        //Using a new shader invalidates all the values we've previously provided as uniform inputs.
-        //Need to supply them again.
-        Shader.setViewMatrix(gl, view.getMatrix());
-        
-        //Just drawing a standard 2x1 quad.
-        quad.draw(gl);
-        getDefaultShader().use(gl);*/
-        rotationX += 1;
+        //rotationZ += 1;
+        //rotationX += 1;
+        //getDefaultShader().use(gl);
     }
 
 	@Override
@@ -150,45 +137,12 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
-		
-        /*vertexBuffer = new Point3DBuffer(Arrays.asList(
-				new Point3D(-1,1,1), 
-				new Point3D(-1,1,1),
-				new Point3D(1,-1,1), 
-				new Point3D(1,1,1),
-				new Point3D(1,-1,-1), 
-				new Point3D(1,1,-1),
-				new Point3D(-1,-1,-1), 
-				new Point3D(-1,1,-1),
-				new Point3D(-1,-1,1),  //Repeating the starting vertices 
-				new Point3D(-1,1,1))); // as they have their own tex coords 
-
-		texCoordBuffer = new Point2DBuffer(Arrays.asList(
-                new Point2D(0,0),
-                new Point2D(0,1f),
-                new Point2D(0.25f,0),
-                new Point2D(0.25f,1f),
-                new Point2D(0.5f,0),
-                new Point2D(0.5f,1f),
-                new Point2D(0.75f,0),
-                new Point2D(0.75f,1f),
-                new Point2D(1,0),
-                new Point2D(1,1f)));
-		
-        // textured cube example
-        indicesBuffer = GLBuffers.newDirectIntBuffer(new int[] {
-            0,2,1,
-            1,2,3,
-            2,4,3,
-            3,4,5,
-            4,6,5,
-            5,6,7,
-            6,8,7,
-            7,8,9,
-		});*/
         
-
-
+        TriangleMesh mesh = terrain.makeTerrain(gl);
+        
+        vertexBuffer = terrain.getVertexBuffer();
+        texCoordBuffer = terrain.getTexCoordBuffer();
+        indicesBuffer = terrain.getIndicesBuffer();
 
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
@@ -209,13 +163,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer.capacity() * Integer.BYTES,
                 indicesBuffer, GL.GL_STATIC_DRAW);
         
-        try {
-			terrainMesh = new TriangleMesh("res/models/cube.ply");
-			terrainMesh.init(gl);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+    	mesh.init(gl);
 		
 	}
 	
@@ -258,6 +206,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
 	public void keyReleased(KeyEvent e) {
 		camera.keyReleased(e); // do what camera would do 
 	}
+	
 
 
 }
