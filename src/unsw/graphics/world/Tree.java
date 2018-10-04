@@ -19,6 +19,10 @@ public class Tree {
         return position;
     }
     
+    
+    
+    
+    // use this function? 
     public void drawTree() {
     	
     }
