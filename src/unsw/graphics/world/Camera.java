@@ -20,6 +20,7 @@ public class Camera implements  KeyListener {
     private float myAngleY;
     private float myAngleZ; 
     private float myScale; 
+    private CoordFrame3D viewFrame;
 
     public Camera() {
     	//Some default Values
@@ -27,6 +28,8 @@ public class Camera implements  KeyListener {
     	myAngleX = 0; myAngleY = 0;
     	myAngleZ = 0; 
         myScale = 1;
+        viewFrame = CoordFrame3D.identity();
+        
     }
     /**
      * Set the view transform
@@ -36,15 +39,19 @@ public class Camera implements  KeyListener {
      * @param gl
      */
     public void setView(GL3 gl) {
-        CoordFrame3D viewFrame = CoordFrame3D.identity()
+        viewFrame = CoordFrame3D.identity()
                 .scale(1/myScale, 1/myScale, 1/myScale)
                 .rotateZ(-myAngleZ)                
                 .rotateX(-myAngleX)
                 .rotateY(-myAngleY)
                 .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
-        //return viewFrame;
     }
+    
+    public CoordFrame3D getView() {
+        return viewFrame;
+    }
+    
     //How to debug control
     // w moves you closer aka +z
     // s move you further away aka -z
