@@ -92,7 +92,7 @@ public class Terrain {
         float altitude = 0;
 
         // TODO: Implement this                // do we need to loop through the array to fins the closest x / y values to the point and then use         // the index and surrounding indexes  ?                
-        /*         * if (x >= width || z >= width) {        	return 0;        }        */
+        /*         * if (x >= width || z >= width) {        	return 0;	        }        */
         // check if both x and z are ints 
         if ((Math.round(x) == x) && (Math.round(z) == z)){
         	// dont need to linear interpolate, altitude already stored 
