@@ -118,6 +118,8 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         indicesName = names[2];
         
         camera.setView(gl);
+        camera.firstPerson(gl, camera.getView());
+        
         //drawTerrain(gl, camera.getView());
 	}
 	
@@ -132,16 +134,16 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         Shader.setPenColor(gl, Color.MAGENTA);
         
         setLighting(gl); // set the lighting properties for the shader 
-        camera.setView(gl); // sets the view matrix 
+        //camera.setView(gl); // sets the view matrix 
 
         
         //drawTerrain(gl, CoordFrame3D.identity().rotateY(rotationY));
         //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
         
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE); // shows as lines vs. filled in ground 
-
-        terrainMesh.draw(gl, camera.getView());
-        terrain.drawTrees(gl, camera.getView());
+        
+        terrainMesh.draw(gl, camera.getfps());
+        terrain.drawTrees(gl, camera.getfps());
         
         rotationY += 1;
         //rotationZ += 1;

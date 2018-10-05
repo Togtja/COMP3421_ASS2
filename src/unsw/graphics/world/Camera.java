@@ -21,6 +21,7 @@ public class Camera implements  KeyListener {
     private float myAngleZ; 
     private float myScale; 
     private CoordFrame3D viewFrame;
+    private CoordFrame3D fps;
 
     public Camera() {
     	//Some default Values
@@ -40,18 +41,20 @@ public class Camera implements  KeyListener {
      */
     public void setView(GL3 gl) {
         viewFrame = CoordFrame3D.identity()
-                .scale(1/myScale, 1/myScale, 1/myScale)
-                .rotateZ(-myAngleZ)                
-                .rotateX(-myAngleX)
-                .rotateY(-myAngleY)
-                .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
+                .translate(new Point3D(0,-0.5f,-4.5f));
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
     
     public CoordFrame3D getView() {
         return viewFrame;
     }
-    
+    public void firstPerson(GL3 gl, CoordFrame3D frame) {
+    	fps = frame;
+        //Shader.setViewMatrix(gl, frame.getMatrix());
+    }
+    public CoordFrame3D getfps() {
+        return fps;
+    }
     //How to debug control
     // w moves you closer aka +z
     // s move you further away aka -z
@@ -67,56 +70,56 @@ public class Camera implements  KeyListener {
         switch(e.getKeyCode()) {
         case KeyEvent.VK_A:
             if (e.isShiftDown())
-                myAngleY += 5;
+            	fps = fps.rotateY(-5);
             else
-                myPos = new Point3D(myPos.getX() - 0.1f, myPos.getY(), myPos.getZ());  
+            	fps = fps.translate(0.1f,0,0);
             break;
             
         case KeyEvent.VK_D:
             if (e.isShiftDown()) 
-                myAngleY -= 5;
+            	fps = fps.rotateY(5);
             else
-                myPos = new Point3D(myPos.getX() + 0.1f, myPos.getY(), myPos.getZ());                
+            	fps = fps.translate(-0.1f,0,0);               
             break;
 
         case KeyEvent.VK_S:
             if (e.isShiftDown())
-            	myAngleX -= 5;
+            	fps = fps.rotateX(-5);
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() + 0.1f); //Might want to change z instead
+            	fps = fps.translate(0,0,-0.1f);           
             break;
 
         case KeyEvent.VK_W:
             if (e.isShiftDown())
-            	myAngleX += 5;
+            	fps = fps.rotateX(5);
             else
-                myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() - 0.1f);
+            	fps = fps.translate(0,0,0.1f);
             break;
         case KeyEvent.VK_Q:
         	 if (e.isShiftDown())
         		 myScale *= 1.1;
              else
-            	 myAngleZ -=5;
+            	 fps = fps.rotateZ(-5);
         	 break;
       	case KeyEvent.VK_E:
       		if (e.isShiftDown())
       			myScale /= 1.1;
       		else
-      			myAngleZ +=5;
+      			fps = fps.rotateZ(5);
       		break;
         
         //Delivery keys
   		case KeyEvent.VK_UP:
-  			myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() - 0.1f);
+  			fps = fps.translate(0,0,0.1f);
   			break;
   		case KeyEvent.VK_DOWN:
-  			myPos = new Point3D(myPos.getX(), myPos.getY() , myPos.getZ() + 0.1f);
+  			fps = fps.translate(0,0,-0.1f);
   			break;
   		case KeyEvent.VK_LEFT:
-  			myAngleY +=5;
+  			fps = fps.rotateY(-5);
   			break;
   		case KeyEvent.VK_RIGHT:
-  			myAngleY -=5;
+  			fps = fps.rotateY(5);
   			break;
        }
 
