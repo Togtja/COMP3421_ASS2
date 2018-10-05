@@ -137,6 +137,9 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         
         //drawTerrain(gl, CoordFrame3D.identity().rotateY(rotationY));
         //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
+        
+        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE); // shows as lines vs. filled in ground 
+
         terrainMesh.draw(gl, camera.getView());
         
         rotationY += 1;

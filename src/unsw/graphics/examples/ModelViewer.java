@@ -125,8 +125,7 @@ public class ModelViewer extends Application3D {
                 // Uncomment the line below to rotate the camera
                 // .rotateY(rotateY)
                 .translate(0, 0, 2);
-        Shader.setViewMatrix(gl, view.getMatrix());
-
+ 
         // Set the lighting properties
         if (USE_LIGHTING) {
             Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
