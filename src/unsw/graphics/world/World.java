@@ -78,16 +78,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         terrain.setTriangle();
         world.start();
     }
- 
 
-	/*@Override
-	public void display(GL3 gl) {
-		super.display(gl);
-		camera.setView(gl);
-		CoordFrame3D frame = CoordFrame3D.identity();
-		terrain.draw(gl,frame);
-        
-	}*/
 	
 	@Override
 	public void init(GL3 gl) {
@@ -137,7 +128,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         //camera.setView(gl); // sets the view matrix 
 
         
-        //drawTerrain(gl, CoordFrame3D.identity().rotateY(rotationY));
+        //drawTerrain(gl, CoordFrame3D.identity().rotateY(rotationY)); // call to add shading 
         //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
         
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE); // shows as lines vs. filled in ground 
