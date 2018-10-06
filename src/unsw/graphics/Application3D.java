@@ -82,7 +82,7 @@ public abstract class Application3D extends Application {
         // Turn on the depth buffer
         gl.glEnable(GL.GL_DEPTH_TEST);
         
-        // Cull back faces
+        // Cull back faces - turned off for project so that terrain would draw properly 
         gl.glEnable(GL.GL_CULL_FACE);
     }
     

@@ -33,7 +33,7 @@ import unsw.graphics.world.Camera;
  *
  * @author malcolmr
  */
-public class World extends Application3D implements KeyListener { //, MouseListener {
+public class World extends Application3D implements KeyListener {
 
     private Terrain terrain;
     private Camera camera;
@@ -46,11 +46,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
     
     //Debug stuff
     private float rotationZ,rotationY, rotationX;
-    
-    
-    private Point3DBuffer vertexBuffer;
-    private Point2DBuffer texCoordBuffer;
-    private IntBuffer indicesBuffer;
+
     private int verticesName;
     private int texCoordsName;
     private int indicesName;
@@ -96,11 +92,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         shader.use(gl);
         
         //terrainMesh.draw(gl, camera.getView());
-        
-        vertexBuffer = terrain.getVertexBuffer();
-        texCoordBuffer = terrain.getTexCoordBuffer();
-        indicesBuffer = terrain.getIndicesBuffer();
-
+      
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
 
@@ -127,8 +119,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         setLighting(gl); // set the lighting properties for the shader 
         //camera.setView(gl); // sets the view matrix 
 
-        
-        //drawTerrain(gl, CoordFrame3D.identity().rotateY(rotationY)); // call to add shading 
+        drawTerrain(gl, CoordFrame3D.identity());//.rotateY(rotationY)); // call to add shading 
         //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
         
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE); // shows as lines vs. filled in ground 
@@ -159,7 +150,7 @@ public class World extends Application3D implements KeyListener { //, MouseListe
      * @param frame
      */
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
-        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
+       /* gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
         gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
         
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
@@ -168,25 +159,25 @@ public class World extends Application3D implements KeyListener { //, MouseListe
         gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indicesName);
         
         Shader.setModelMatrix(gl, frame.getMatrix());
-        gl.glDrawElements(GL.GL_TRIANGLES, indicesBuffer.capacity(), 
+        gl.glDrawElements(GL.GL_TRIANGLES, terrain.getIndicesBuffer().capacity(), 
                 GL.GL_UNSIGNED_INT, 0);
-        
-       /* gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
-        gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 3 * Float.BYTES,
-                vertexBuffer.getBuffer(), GL.GL_STATIC_DRAW);
+        */
+        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
+        gl.glBufferData(GL.GL_ARRAY_BUFFER, terrain.getVertexBuffer().capacity() * 3 * Float.BYTES,
+        		terrain.getVertexBuffer().getBuffer(), GL.GL_STATIC_DRAW);
         
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
-        gl.glBufferData(GL.GL_ARRAY_BUFFER, texCoordBuffer.capacity() * 2 * Float.BYTES,
-                texCoordBuffer.getBuffer(), GL.GL_STATIC_DRAW);
+        gl.glBufferData(GL.GL_ARRAY_BUFFER, terrain.getTexCoordBuffer().capacity() * 2 * Float.BYTES,
+        		terrain.getTexCoordBuffer().getBuffer(), GL.GL_STATIC_DRAW);
        
         gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indicesName);
-        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer.capacity() * Integer.BYTES,
-                indicesBuffer, GL.GL_STATIC_DRAW);	
+        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, terrain.getIndicesBuffer().capacity() * Integer.BYTES,
+        		terrain.getIndicesBuffer(), GL.GL_STATIC_DRAW);	
         
         // not sure about this 
         Shader.setModelMatrix(gl, frame.getMatrix());
-        gl.glDrawElements(GL.GL_TRIANGLES, indicesBuffer.capacity(), 
-                GL.GL_UNSIGNED_INT, 0);*/
+        gl.glDrawElements(GL.GL_TRIANGLES, terrain.getIndicesBuffer().capacity(), 
+                GL.GL_UNSIGNED_INT, 0);
     }
 
 
