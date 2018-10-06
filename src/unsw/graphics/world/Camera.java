@@ -41,7 +41,7 @@ public class Camera implements  KeyListener {
      */
     public void setView(GL3 gl) {
         viewFrame = CoordFrame3D.identity()
-                .translate(new Point3D(0,-0.5f,-4.5f));
+                .translate(new Point3D(0,-0.5f,-9f));       // .translate(0, -0.5f, -4.5f);
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
     

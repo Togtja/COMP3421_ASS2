@@ -82,11 +82,9 @@ public class World extends Application3D implements KeyListener {
 		getWindow().addKeyListener(camera);
 		getWindow().addKeyListener(this);
         		
-        terrainMesh = terrain.makeTerrain(gl);
+        terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
         terrainMesh.init(gl);
         
-        texture = new Texture(gl, "res/textures/kittens.jpg", "jpg", false);
-
         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
                 "shaders/fragment_tex_phong.glsl");
         shader.use(gl);
@@ -109,20 +107,24 @@ public class World extends Application3D implements KeyListener {
 	@Override
     public void display(GL3 gl) {
         super.display(gl);
+        
+        
+        texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
+          
         Shader.setInt(gl,"tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
 
-        Shader.setPenColor(gl, Color.MAGENTA);
-        
+        Shader.setPenColor(gl, Color.GREEN);
+                
         setLighting(gl); // set the lighting properties for the shader 
         //camera.setView(gl); // sets the view matrix 
 
-        drawTerrain(gl, CoordFrame3D.identity());//.rotateY(rotationY)); // call to add shading 
+        //drawTerrain(gl, CoordFrame3D.identity());//.rotateY(rotationY)); // call to add shading 
         //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
         
-        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE); // shows as lines vs. filled in ground 
+        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
         terrainMesh.draw(gl, camera.getfps());
         terrain.drawTrees(gl, camera.getfps());
@@ -150,36 +152,8 @@ public class World extends Application3D implements KeyListener {
      * @param frame
      */
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
-       /* gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
-        gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
         
-        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
-        gl.glVertexAttribPointer(Shader.TEX_COORD, 2, GL.GL_FLOAT, false, 0, 0);
-        
-        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indicesName);
-        
-        Shader.setModelMatrix(gl, frame.getMatrix());
-        gl.glDrawElements(GL.GL_TRIANGLES, terrain.getIndicesBuffer().capacity(), 
-                GL.GL_UNSIGNED_INT, 0);
-        */
-        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
-        gl.glBufferData(GL.GL_ARRAY_BUFFER, terrain.getVertexBuffer().capacity() * 3 * Float.BYTES,
-        		terrain.getVertexBuffer().getBuffer(), GL.GL_STATIC_DRAW);
-        
-        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
-        gl.glBufferData(GL.GL_ARRAY_BUFFER, terrain.getTexCoordBuffer().capacity() * 2 * Float.BYTES,
-        		terrain.getTexCoordBuffer().getBuffer(), GL.GL_STATIC_DRAW);
-       
-        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, indicesName);
-        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, terrain.getIndicesBuffer().capacity() * Integer.BYTES,
-        		terrain.getIndicesBuffer(), GL.GL_STATIC_DRAW);	
-        
-        // not sure about this 
-        Shader.setModelMatrix(gl, frame.getMatrix());
-        gl.glDrawElements(GL.GL_TRIANGLES, terrain.getIndicesBuffer().capacity(), 
-                GL.GL_UNSIGNED_INT, 0);
     }
-
 
 	@Override
 	public void reshape(GL3 gl, int width, int height) {
