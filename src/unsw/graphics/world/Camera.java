@@ -73,6 +73,10 @@ public class Camera implements  KeyListener {
                 .translate(myPosX,myPosY,myPosZ);       // .translate(0, -0.5f, -4.5f);
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
+    public void setView(CoordFrame3D frame) { //Take in Point3D as argument so we default is decided in World
+        viewFrame = frame;       // .translate(0, -0.5f, -4.5f);
+        //Shader.setViewMatrix(gl, viewFrame.getMatrix());
+    }
     
     public CoordFrame3D getView() {
         return viewFrame;
