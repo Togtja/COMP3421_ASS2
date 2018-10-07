@@ -21,6 +21,7 @@ import unsw.graphics.Point2DBuffer;
 import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
+import unsw.graphics.world.Person;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -56,6 +57,7 @@ public class World extends Application3D implements KeyListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
     }
    
     
@@ -68,8 +70,7 @@ public class World extends Application3D implements KeyListener {
      */
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
-        World world = new World(terrain);
-         
+        World world = new World(terrain); 
         terrain.setTriangle();
         world.start();
     }
@@ -82,10 +83,17 @@ public class World extends Application3D implements KeyListener {
 		getWindow().addKeyListener(person.getCam());
 		getWindow().addKeyListener(this);
         
+
 		person.init(gl);
 		
-        terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
+        //terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
+		
+		
+        terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
+		terrainMesh = terrain.getTriMesh();
         terrainMesh.init(gl);
+        
+        //camera = new Camera(terrainMesh);
         
         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
         shader.use(gl);
