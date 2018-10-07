@@ -37,27 +37,19 @@ public class World extends Application3D implements KeyListener {
 
     private Terrain terrain;
     private Camera camera;
-    private Tree tree; 
     private Person person;
     private TriangleMesh terrainMesh;
-    private TriangleMesh treeMesh; 
-    
-    private String treeFile = "res/models/tree.ply"; 
-    
-    //Debug stuff
-    private float rotationZ,rotationY, rotationX;
 
     private int verticesName;
     private int texCoordsName;
     private int indicesName;
 
-    private Texture texture;
+    private Texture grass;
 
     public World(Terrain terrain) {
     	super("Assignment 2", 600, 600);
         this.terrain = terrain;
         camera = new Camera(); // Creates a camera
-        //treeMesh = new TriangleMesh(treeFile, true, true); // creates a tree 
     }
    
     
@@ -86,11 +78,10 @@ public class World extends Application3D implements KeyListener {
         terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
         terrainMesh.init(gl);
         
-        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
-                "shaders/fragment_tex_phong.glsl");
+        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
         shader.use(gl);
         
-        //terrainMesh.draw(gl, camera.getView());
+        //setLighting(gl); // set the lighting properties for the shader 
       
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
@@ -101,39 +92,28 @@ public class World extends Application3D implements KeyListener {
         
         camera.setView(gl);
         camera.firstPerson(gl, camera.getView());
-        
-        //drawTerrain(gl, camera.getView());
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
+        grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         
-        
-        texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
-          
         Shader.setInt(gl,"tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+        gl.glBindTexture(GL.GL_TEXTURE_2D, grass.getId());
 
         Shader.setPenColor(gl, Color.GREEN);
                 
         setLighting(gl); // set the lighting properties for the shader 
-        //camera.setView(gl); // sets the view matrix 
 
-        //drawTerrain(gl, CoordFrame3D.identity());//.rotateY(rotationY)); // call to add shading 
-        //terrain.draw(gl, CoordFrame3D.identity().rotateZ(rotationZ)); //.rotateY(rotationY).rotateX(rotationX));
-        
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
         terrainMesh.draw(gl, camera.getfps());
         terrain.drawTrees(gl, camera.getfps());
         //person.TrdPerson(gl, camera.getfps());
-        rotationY += 1;
-        //rotationZ += 1;
-        //rotationX += 1;
-        //getDefaultShader().use(gl);
+
     }
 
 	@Override
