@@ -24,8 +24,7 @@ public class Camera implements  KeyListener {
     private float myRotY;
     private float myRotZ; 
     private float myScale; 
-    private float speed = 0.3f;
-   
+    private float speed = 0.3f;   
     
     private CoordFrame3D local;
     private CoordFrame3D viewFrame;
@@ -94,24 +93,26 @@ public class Camera implements  KeyListener {
     
     @Override
     public void keyPressed(KeyEvent e) {
-        double xrotrad, zrotrad;
+        double rad;
         float xtrans, ytrans, ztrans;
+        double xrotrad, zrotrad; 
         
         switch(e.getKeyCode()) {
         
         // A key pressed 
         case KeyEvent.VK_A:      					
             if (e.isShiftDown()) { // rotate in negative y direction 
-            	viewFrame = viewFrame.rotateY(-5);
+            	viewFrame = viewFrame.rotateY(-2);
+
             	// keep track of rotation
-            	myRotY -= 5;
-            	if (myRotY < -360) myRotY += 360;	// normalise angle 
+            	myRotZ -= 2;
+            	if (myRotZ < -360) myRotZ += 360;	// normalise angle 
             } else { // translate left 
-            	zrotrad = (myRotZ / 180 * Math.PI);  
-            	ztrans = (float) (Math.cos(zrotrad) * 0.2);
-            	xtrans = (float) (Math.sin(zrotrad) * 0.2);
-            	//fps = fps.translate(0.1f, 0, 0);
-            	viewFrame = viewFrame.translate(xtrans, 0, ztrans);
+
+            	rad = (myRotZ * Math.PI / 180);
+            	xtrans = (float) (-1 * Math.sin(rad) * speed);
+            	ztrans = (float) (-1 * Math.cos(rad) * speed); 
+            	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);
             }
             break;
         
@@ -120,13 +121,13 @@ public class Camera implements  KeyListener {
             if (e.isShiftDown()) { // rotate in positive y direction 
             	viewFrame = viewFrame.rotateY(5);
             	// keep track of angle 
-            	myRotY += 1;
-            	if (myRotY > 360) myRotY -= 360;	// normalise angle 
+            	myRotZ += 1;
+            	if (myRotZ > 360) myRotZ -= 360;	// normalise angle 
             } else {	// translate right       
-            	zrotrad = (myRotZ / 180 * Math.PI);
-            	xtrans = (float) (Math.cos(zrotrad) * 0.2 * -1);
-            	ztrans = (float) (Math.sin(zrotrad) * 0.2 * -1);
-            	//fps = fps.translate(-0.1f, 0, 0); 
+
+            	rad = (myRotZ / 180 * Math.PI);
+            	xtrans = (float) (1 * Math.sin(rad) * speed);
+            	ztrans = (float) (1 * Math.cos(rad) * speed); 
             	viewFrame = viewFrame.translate(xtrans, 0, ztrans); 
             }
             break;
@@ -138,13 +139,13 @@ public class Camera implements  KeyListener {
             	// keep track of angle 
                 myRotX -= 1;
                 if (myRotX < -360) myRotX += 360; // normalise angle 
-            } else { // translate backwards 
-            	zrotrad = (myRotZ * Math.PI / 180);
-            	xrotrad = (myRotX  * Math.PI / 180);
-            	xtrans = (float) (Math.sin(zrotrad) * 0.1f * -1f);
-            	// ytrans = (float) (Math.cos(zrotrad) * 0.1f);
-            	ztrans = (float) (Math.sin(xrotrad) * 0.1f);
-            	viewFrame = viewFrame.translate(xtrans, 0, ztrans);   
+
+            } 
+            else { 	// move backwards 
+            	rad = (myRotZ * Math.PI / 180);
+      			xtrans = (float) (1 * Math.sin(rad) * speed);
+            	ztrans = (float) (-1 * Math.cos(rad) * speed);       
+            	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);  
             }
             break;
             
@@ -155,15 +156,13 @@ public class Camera implements  KeyListener {
             	// keep track of angle 
             	myRotX += 1;
                 if (myRotX > 360) myRotX -= 360; // normalise angle 
-            }
-            else {// shift in positive z direction fps = fps.translate(0, 0, 0.1f);
-            	zrotrad = (myRotZ * Math.PI / 180);
-            	xrotrad = (myRotX * Math.PI / 180);
-            	
-            	xtrans = (float) (Math.sin(zrotrad) * 0.1f);
-            	//ytrans = (float) (Math.cos(zrotrad) * 0.1f * -1f);
-            	ztrans = (float) (Math.sin(xrotrad) * 0.1f * -1f);
-            	viewFrame = viewFrame.translate(xtrans, 0, ztrans);   
+
+            } 
+            else {	// move forwards 
+            	rad = (myRotZ * Math.PI / 180);
+      			xtrans = (float) (-1 * Math.sin(rad) * speed);
+            	ztrans = (float) (1 * Math.cos(rad) * speed); 
+            	viewFrame = viewFrame.translate(xtrans, 0f, ztrans); 
             }
             break;
             
@@ -173,10 +172,10 @@ public class Camera implements  KeyListener {
         		 viewFrame = viewFrame.scale(1/1.1f, 1/1.1f, 1/1.1f);
         	 }
              else { // rotate in negative z direction 
-            	 viewFrame = viewFrame.rotateZ(-5);
+            	 viewFrame = viewFrame.rotateZ(-2);
             	 // keep track of rotation
-            	 myRotZ -= 5; 
-            	 if (myRotZ < -360) myRotZ += 360;
+            	 myRotY -= 2; 
+            	 if (myRotY < -360) myRotY += 360;
              }
         	 break;
         	 
@@ -184,41 +183,40 @@ public class Camera implements  KeyListener {
       	case KeyEvent.VK_E:	
       		if (e.isShiftDown()) { // increase scale 
       			viewFrame = viewFrame.scale(1.1f, 1.1f, 1.1f); //myScale /= 1.1;
-      		} else { // rotate in positive z direction 
-      			viewFrame = viewFrame.rotateZ(5);   
+      		} 
+      		else { // rotate in positive z direction 
+      			viewFrame = viewFrame.rotateZ(2); 
       			// keep track of rotation
-      			myRotZ += 5;
-      			if (myRotZ > 360) myRotZ -= 360;
+      			myRotY += 2;
+      			if (myRotY > 360) myRotY -= 360;
       		}
       		break;
 
         //Delivery keys
   		case KeyEvent.VK_UP:						// Up arrow pressed, camera moves forward 
-  			zrotrad = (myRotZ * Math.PI / 180);
-        	xrotrad = (myRotX * Math.PI / 180);
-        	xtrans = (float) (-1 * Math.sin(xrotrad) * speed);
-        	ztrans = (float) (1 * Math.cos(zrotrad) * speed); 
+
+  			rad = (myRotZ * Math.PI / 180);
+  			xtrans = (float) (-1 * Math.sin(rad) * speed);
+        	ztrans = (float) (1 * Math.cos(rad) * speed); 
         	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);   
   			break;
   		case KeyEvent.VK_DOWN:						// Down arrow pressed, camera moves backwards
-  			zrotrad = (myRotZ * Math.PI / 180);
-        	xrotrad = (myRotX * Math.PI / 180);
-        	xtrans = (float) (1 * Math.sin(xrotrad) * speed);
-        	ztrans = (float) (-1 * Math.cos(zrotrad) * speed); 
-        	viewFrame = viewFrame.translate(xtrans, 0, ztrans);  
+  			rad = (myRotZ * Math.PI / 180);
+  			xtrans = (float) (1 * Math.sin(rad) * speed);
+        	ztrans = (float) (-1 * Math.cos(rad) * speed);       
+        	viewFrame = viewFrame.translate(xtrans, 0f, ztrans); 
   			break;
   		case KeyEvent.VK_LEFT:						// Left arrow pressed, camera moves left 
   			viewFrame = viewFrame.rotateY(-2);
   			// keep track of rotation 
-  			myRotY -= 2; 
-  			if (myRotY < -360) myRotY += 360;
-  			
+  			myRotZ -= 2; 
+  			if (myRotZ < -360) myRotZ += 360;
   			break;
   		case KeyEvent.VK_RIGHT:						// Right arrow pressed, camera moves right 
   			viewFrame = viewFrame.rotateY(2);
   			// keep track of rotation
   			myRotZ += 2; 
-       	 if (myRotZ > 360) myRotZ -= 360;
+  			if (myRotZ > 360) myRotZ -= 360;
   			break;
        }
     }
