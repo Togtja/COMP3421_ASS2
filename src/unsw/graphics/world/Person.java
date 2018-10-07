@@ -40,30 +40,19 @@ public class Person implements KeyListener {
     public void init(GL3 gl) {
     	model.init(gl);
         camera.setView(gl);
-    	camera.firstPerson(camera.getView());
-    	frame = camera.getfps().translate(position).scale(5f, 5f, 5f);
-		//getWindow().addKeyListener(camera);
-        //camera.firstPerson(gl, camera.getView());
+    	frame = camera.getView().translate(position).scale(5f, 5f, 5f);
         
     }
     public Camera getCam() {
     	return camera;
     }
-    public void TrdPerson(GL3 gl) {
-    	/*texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
-        
-        Shader.setInt(gl,"tex", 0);
-        
-        gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
-		*/
+    public void drawPerson(GL3 gl) {
+
         Shader.setPenColor(gl, Color.BLUE);
-    	//frame = camera.getfps().translate(position).scale(5f, 5f, 5f);
-        //frame
     	model.draw(gl, frame);
     }
     public CoordFrame3D getfps() {
-    	return camera.getfps();
+    	return camera.getView();
     }
 
     @Override
@@ -97,7 +86,7 @@ public class Person implements KeyListener {
     			}
     			else {
     				frame = frame.translate(0, 0, -10f);
-        			camera.firstPerson(camera.getView());
+        			//camera.firstPerson(camera.getView());
     				fpsMode = true;
     				fuckKeyList = true;
     			}
