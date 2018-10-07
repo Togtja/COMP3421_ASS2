@@ -53,7 +53,7 @@ public class World extends Application3D implements KeyListener {
         this.terrain = terrain;
         //camera = new Camera(); // Creates a camera
         try {
-			person = new Person();
+			person = new Person(terrain);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
