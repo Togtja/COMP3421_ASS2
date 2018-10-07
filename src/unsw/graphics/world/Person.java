@@ -31,7 +31,8 @@ public class Person implements KeyListener {
     public Person() throws IOException {
     	
     	camera = new Camera(); // Creates a camera
-    	position = new Point3D(0f, 0f, 0f);
+    	position = new Point3D(0f, 0f, 6f);
+    	
         model = new TriangleMesh("res/models/bunny.ply");      
     }
     
@@ -39,6 +40,7 @@ public class Person implements KeyListener {
     	model.init(gl);
         camera.setView(gl);
     	camera.firstPerson(camera.getView());
+    	frame = camera.getfps().translate(position).scale(5f, 5f, 5f);
 		//getWindow().addKeyListener(camera);
         //camera.firstPerson(gl, camera.getView());
         
@@ -47,7 +49,6 @@ public class Person implements KeyListener {
     	return camera;
     }
     public void TrdPerson(GL3 gl) {
-    	model.init(gl); 
     	/*texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         
         Shader.setInt(gl,"tex", 0);
@@ -55,20 +56,19 @@ public class Person implements KeyListener {
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
 		*/
-        Shader.setPenColor(gl, Color.YELLOW);
-    	CoordFrame3D frame = camera.getfps().translate(position).scale(5f, 5f, 5f);
+        Shader.setPenColor(gl, Color.BLUE);
+    	//frame = camera.getfps().translate(position).scale(5f, 5f, 5f);
+        //frame.
     	model.draw(gl, frame);
     }
     public CoordFrame3D getfps() {
     	return camera.getfps();
     }
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		
-		camera.keyPressed(e);
-		
-	}
+    @Override
+    public void keyPressed(KeyEvent e) {
+    	camera.keyPressed(e);
+    }
 
 	@Override
 	public void keyReleased(KeyEvent e) {

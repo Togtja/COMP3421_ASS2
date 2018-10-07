@@ -128,8 +128,9 @@ public class Camera implements  KeyListener {
         
         //Delivery keys
   		case KeyEvent.VK_UP:
-  			Point3D p = fps.transform(new Point3D(0f, 0f, -0.1f));
-  			fps = fps.translate(p);
+  			//Point3D p = fps.transform(new Point3D(0f, 0f, -0.1f));
+  			//fps = fps.translate(p);
+  			fps = fps.translate(0, 0, 0.1f);
   			break;
   		case KeyEvent.VK_DOWN:
   			fps = fps.translate(0, 0, -0.1f);
