@@ -129,7 +129,7 @@ public class World extends Application3D implements KeyListener {
         
         terrainMesh.draw(gl, person.getfps());
         terrain.drawTrees(gl, person.getfps());
-        person.TrdPerson(gl);
+        //person.TrdPerson(gl);
 
     }
 

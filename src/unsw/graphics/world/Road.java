@@ -1,5 +1,6 @@
 package unsw.graphics.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import unsw.graphics.geometry.Point2D;
@@ -104,6 +105,22 @@ public class Road {
         
         // this should never happen
         throw new IllegalArgumentException("" + i);
+    }
+    
+    
+    /**
+     * Calculate the second Bezier curve for the road 
+     * 
+     * @param initPoints
+     */
+    public void makeRoad(List<Point2D> initPoints) {
+    	List<Point2D> points = new ArrayList<Point2D>();
+    	for (int i = 0; i < initPoints.size(); i++) {
+    		Point2D point = new Point2D(initPoints.get(i).getX() + width, initPoints.get(i).getY());
+    		points.add(point);
+    	}
+    	
+    	
     }
 
 
