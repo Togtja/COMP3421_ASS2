@@ -21,6 +21,7 @@ import unsw.graphics.Point2DBuffer;
 import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
+import unsw.graphics.examples.person.Person;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -36,9 +37,9 @@ import unsw.graphics.world.Camera;
 public class World extends Application3D implements KeyListener {
 
     private Terrain terrain;
-    private TriangleMesh terrainMesh;
-
     private Camera camera;
+    private Person person;
+    private TriangleMesh terrainMesh;
 
     private int verticesName;
     private int texCoordsName;
@@ -65,6 +66,7 @@ public class World extends Application3D implements KeyListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
+        //Person person = new Person(0f,0f,0f); 
         world.start();
     }
 
@@ -100,7 +102,7 @@ public class World extends Application3D implements KeyListener {
 	}
 	
 	@Override
-    public void display(GL3 gl) {
+    public void display(GL3 gl)  {
         super.display(gl);
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         
@@ -117,6 +119,8 @@ public class World extends Application3D implements KeyListener {
         
         terrainMesh.draw(gl, camera.getfps());
         terrain.drawTrees(gl, camera.getfps());
+        //person.TrdPerson(gl, camera.getfps());
+
     }
 
 	@Override
@@ -174,6 +178,4 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
 	}
-
-
 }
