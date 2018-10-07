@@ -38,7 +38,7 @@ public class World extends Application3D implements KeyListener {
     private Terrain terrain;
     private Camera camera;
     private Tree tree; 
-    
+    private Person person;
     private TriangleMesh terrainMesh;
     private TriangleMesh treeMesh; 
     
@@ -71,6 +71,7 @@ public class World extends Application3D implements KeyListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
+        //Person person = new Person(0f,0f,0f); 
         terrain.setTriangle();
         world.start();
     }
@@ -105,7 +106,7 @@ public class World extends Application3D implements KeyListener {
 	}
 	
 	@Override
-    public void display(GL3 gl) {
+    public void display(GL3 gl)  {
         super.display(gl);
         
         
@@ -128,7 +129,7 @@ public class World extends Application3D implements KeyListener {
         
         terrainMesh.draw(gl, camera.getfps());
         terrain.drawTrees(gl, camera.getfps());
-        
+        //person.TrdPerson(gl, camera.getfps());
         rotationY += 1;
         //rotationZ += 1;
         //rotationX += 1;
@@ -190,6 +191,4 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
 	}
-
-
 }
