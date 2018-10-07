@@ -50,7 +50,7 @@ public class Camera implements  KeyListener {
     public CoordFrame3D getView() {
         return viewFrame;
     }
-    public void firstPerson(GL3 gl, CoordFrame3D frame) {
+    public void firstPerson(CoordFrame3D frame) {
     	fps = frame;
         //Shader.setViewMatrix(gl, frame.getMatrix());
     }

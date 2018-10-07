@@ -30,7 +30,7 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
-        this.sunlight = sunlight;    }        public void drawTrees(GL3 gl, CoordFrame3D frame) {    	for	(int i = 0; i < trees.size(); i++) {    		trees.get(i).drawTree(gl, frame);    	}    }        
+        this.sunlight = sunlight;    }        public void drawTrees(GL3 gl, CoordFrame3D frame) {    	for	(int i = 0; i < trees.size(); i++) {    		trees.get(i).init(gl);    		trees.get(i).drawTree(gl, frame);    	}    }        
     public void setTriangle(){        List<Point3D>  points = new ArrayList<Point3D>();        for(int i = 0; i < width; i++) {            for(int j = 0; j < depth; j++) {            	points.add(new Point3D((float) i, altitudes[i][j], (float) j));            	//System.out.println();            }        }                tri3D = new LineStrip3D(points);        //tri3D = new TriangleFan3D(points);        //tri3D = new TriangleMesh(points);    }
         
     public List<Tree> trees() {

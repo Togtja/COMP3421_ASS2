@@ -36,7 +36,7 @@ import unsw.graphics.world.Camera;
 public class World extends Application3D implements KeyListener {
 
     private Terrain terrain;
-    private Camera camera;
+    //private Camera camera;
     private Person person;
     private TriangleMesh terrainMesh;
 
@@ -49,7 +49,13 @@ public class World extends Application3D implements KeyListener {
     public World(Terrain terrain) {
     	super("Assignment 2", 600, 600);
         this.terrain = terrain;
-        camera = new Camera(); // Creates a camera
+        //camera = new Camera(); // Creates a camera
+        try {
+			person = new Person();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
    
     
@@ -63,7 +69,7 @@ public class World extends Application3D implements KeyListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
-        //Person person = new Person(0f,0f,0f); 
+         
         terrain.setTriangle();
         world.start();
     }
@@ -72,9 +78,12 @@ public class World extends Application3D implements KeyListener {
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		getWindow().addKeyListener(camera);
+		getWindow().addKeyListener(person);
+		getWindow().addKeyListener(person.getCam());
 		getWindow().addKeyListener(this);
-        		
+        
+		person.init(gl);
+		
         terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
         terrainMesh.init(gl);
         
@@ -90,8 +99,8 @@ public class World extends Application3D implements KeyListener {
         texCoordsName = names[1];
         indicesName = names[2];
         
-        camera.setView(gl);
-        camera.firstPerson(gl, camera.getView());
+        //camera.setView(gl);
+        //camera.firstPerson(gl, camera.getView());
 	}
 	
 	@Override
@@ -110,9 +119,9 @@ public class World extends Application3D implements KeyListener {
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
-        terrainMesh.draw(gl, camera.getfps());
-        terrain.drawTrees(gl, camera.getfps());
-        //person.TrdPerson(gl, camera.getfps());
+        terrainMesh.draw(gl, person.getfps());
+        terrain.drawTrees(gl, person.getfps());
+        person.TrdPerson(gl);
 
     }
 
@@ -145,13 +154,17 @@ public class World extends Application3D implements KeyListener {
 	// implement methods to implement KeyListener interface
 	@Override
 	public void keyPressed(KeyEvent e) {
-		camera.keyPressed(e); // do what camera would do 
+		person.keyPressed(e); // do what camera would do 
 		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		camera.keyReleased(e); // do what camera would do 
+		person.keyReleased(e); // do what camera would do 
+		switch(e.getKeyCode()) {
+    	case KeyEvent.VK_R:
+    		
+		}
 	}
 	
     /**
