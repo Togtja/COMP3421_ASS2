@@ -49,7 +49,9 @@ public class World extends Application3D implements KeyListener {
     public World(Terrain terrain) {
     	super("Assignment 2", 600, 600);
         this.terrain = terrain;
-        camera = new Camera(); // Creates a camera
+        //terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
+		//terrainMesh = terrain.getTriMesh();
+        camera = new Camera(); //terrain.getTriMesh()); // Creates a camera
     }
    
     
@@ -63,7 +65,6 @@ public class World extends Application3D implements KeyListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
-        terrain.setTriangle();
         world.start();
     }
 
@@ -73,9 +74,14 @@ public class World extends Application3D implements KeyListener {
 		super.init(gl);
 		getWindow().addKeyListener(camera);
 		getWindow().addKeyListener(this);
-        		
-        terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
+        
+		
+		
+        terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
+		terrainMesh = terrain.getTriMesh();
         terrainMesh.init(gl);
+        
+        //camera = new Camera(terrainMesh);
         
         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
         shader.use(gl);
