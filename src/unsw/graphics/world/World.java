@@ -71,7 +71,6 @@ public class World extends Application3D implements KeyListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain); 
-        terrain.setTriangle();
         world.start();
     }
 
