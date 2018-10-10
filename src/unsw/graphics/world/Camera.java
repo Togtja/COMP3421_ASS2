@@ -58,7 +58,9 @@ public class Camera implements  KeyListener {
         stepsX = 0; 
         stepsZ = 0;
     }
-    
+    public float getX() {return myPosX;}
+    public float getY() {return myPosY;}
+    public float getZ() {return myPosZ;}
     
     
     /**
@@ -113,6 +115,7 @@ public class Camera implements  KeyListener {
             	xtrans = (float) (-1 * Math.sin(rad) * speed);
             	ztrans = (float) (-1 * Math.cos(rad) * speed); 
             	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);
+            	myPosX += xtrans; myPosZ += ztrans; 
             }
             break;
         
@@ -145,7 +148,8 @@ public class Camera implements  KeyListener {
             	rad = (myRotZ * Math.PI / 180);
       			xtrans = (float) (1 * Math.sin(rad) * speed);
             	ztrans = (float) (-1 * Math.cos(rad) * speed);       
-            	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);  
+            	viewFrame = viewFrame.translate(xtrans, 0f, ztrans); 
+            	myPosX += xtrans; myPosZ += ztrans; 
             }
             break;
             
@@ -163,6 +167,7 @@ public class Camera implements  KeyListener {
       			xtrans = (float) (-1 * Math.sin(rad) * speed);
             	ztrans = (float) (1 * Math.cos(rad) * speed); 
             	viewFrame = viewFrame.translate(xtrans, 0f, ztrans); 
+            	myPosX += xtrans; myPosZ += ztrans; 
             }
             break;
             
@@ -199,12 +204,14 @@ public class Camera implements  KeyListener {
   			xtrans = (float) (-1 * Math.sin(rad) * speed);
         	ztrans = (float) (1 * Math.cos(rad) * speed); 
         	viewFrame = viewFrame.translate(xtrans, 0f, ztrans);   
+        	myPosX += xtrans; myPosZ += ztrans; 
   			break;
   		case KeyEvent.VK_DOWN:						// Down arrow pressed, camera moves backwards
   			rad = (myRotZ * Math.PI / 180);
   			xtrans = (float) (1 * Math.sin(rad) * speed);
         	ztrans = (float) (-1 * Math.cos(rad) * speed);       
         	viewFrame = viewFrame.translate(xtrans, 0f, ztrans); 
+        	myPosX += xtrans; myPosZ += ztrans; 
   			break;
   		case KeyEvent.VK_LEFT:						// Left arrow pressed, camera moves left 
   			viewFrame = viewFrame.rotateY(-2);

@@ -28,12 +28,13 @@ public class Person implements KeyListener {
     private static final boolean USE_CUBEMAP = false;
     private TriangleMesh model;
     private Texture texture;
+    private Terrain terrain;
     
-    public Person() throws IOException {
+    public Person(Terrain t) throws IOException {
     	
     	camera = new Camera(); // Creates a camera
     	position = new Point3D(0f, 0f, 6f);
-    	
+    	terrain = t;
         model = new TriangleMesh("res/models/bunny.ply");      
     }
     
@@ -58,6 +59,18 @@ public class Person implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
     	camera.keyPressed(e);
+    	//DO WHEN WE HAVE ROATION SOLVED IN CAMERA
+    	//I add y position everytime, maybe set it instead of adding
+    	//System.out.println("\n\n\nX is " + camera.getX() + "\nY is " + camera.getY() + "\nZ is " + camera.getZ());
+    	/*
+    	if(-camera.getX() > 0 && -camera.getX() < terrain.getWidth()) {
+      	  if (-camera.getZ() > 0 && -camera.getZ() < terrain.getDepth()) {
+      		camera.setView(camera.getView().translate(0, -terrain.altitude(-camera.getX(), -camera.getY()), 0));
+      	  }
+    	}
+    	else {
+    		camera.setView(frame);
+    	}*/
     }
 
 	@Override
