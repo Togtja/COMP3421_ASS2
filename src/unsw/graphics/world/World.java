@@ -48,8 +48,8 @@ public class World extends Application3D implements KeyListener {
     private Texture grass;
 
     public World(Terrain terrain) {
-    	//super("Assignment 2", 2000, 2000);
-    	super("Assignment 2", 600, 600);
+    	super("Assignment 2", 2000, 2000);
+    	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
         //camera = new Camera(); // Creates a camera
         try {
