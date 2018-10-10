@@ -1,9 +1,18 @@
 package unsw.graphics.scene;
 
-import com.jogamp.opengl.GL3;
+import java.awt.Toolkit;
+import java.awt.geom.Dimension2D;
 
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.glu.GLU;
+
+import unsw.graphics.CoordFrame2D;
 import unsw.graphics.Matrix3;
+import unsw.graphics.Shader;
 import unsw.graphics.Vector3;
+import unsw.graphics.geometry.LineStrip2D;
 import unsw.graphics.geometry.Point2D;
 
 /**
@@ -29,16 +38,27 @@ public class Camera extends SceneObject {
     public void setView(GL3 gl) {
         // TODO compute a view transform to account for the cameras aspect ratio
         
-        // TODO apply further transformations to account for the camera's global position, 
-        // rotation and scale
-        
+    	// compute view transform for dimensions of screen;
+    	CoordFrame2D viewFrame = CoordFrame2D.identity()
+    			.scale(1/getAspectRatio(), 1)
+    	// TODO apply further transformations to account for the camera's global position, 
+    	// rotation and scale
+                .scale(1/getScale(), 1/getScale())
+                .rotate(-1*getRotation())
+                .translate(-1*getPosition().getX(), -1*getPosition().getY());
+    	
         // TODO set the view matrix to the computed transform
+        Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
 
     public void reshape(int width, int height) {
         myAspectRatio = (1f * width) / height;            
     }
 
+    public void reshape2(int width, int height, GL3 gl) {
+        myAspectRatio = (1f * width) / height;            
+    }
+    
     /**
      * Transforms a point from camera coordinates to world coordinates. Useful for things like mouse
      * interaction

@@ -31,8 +31,7 @@ public class Person implements KeyListener {
     private Terrain terrain;
     
     public Person(Terrain t) throws IOException {
-    	
-    	camera = new Camera(); // Creates a camera
+    	camera = new Camera(t);//Camera(); // Creates a camera
     	position = new Point3D(0f, 0f, 6f);
     	terrain = t;
         model = new TriangleMesh("res/models/bunny.ply");      
@@ -42,16 +41,18 @@ public class Person implements KeyListener {
     	model.init(gl);
         camera.setView(gl);
     	frame = camera.getView().translate(position).scale(5f, 5f, 5f);
-        
     }
+    
     public Camera getCam() {
     	return camera;
     }
+    
     public void drawPerson(GL3 gl) {
 
         Shader.setPenColor(gl, Color.BLUE);
     	model.draw(gl, frame);
     }
+    
     public CoordFrame3D getfps() {
     	return camera.getView();
     }
@@ -73,38 +74,33 @@ public class Person implements KeyListener {
     	}*/
     }
 
-	@Override
+	//@Override
 	public void keyReleased(KeyEvent e) {
 		camera.keyReleased(e);
 		
 		switch(e.getKeyCode()) {
     	case KeyEvent.VK_R:
     		if(fpsMode && !e.isAutoRepeat()) {
-
     			if(fuckKeyList) {
     				fuckKeyList = false;
-    			}
-    			else {
-        			camera.setView(frame);
-        			frame = frame.translate(0, 0, 10f);
+    			} else {
+    				camera.setView(frame);
+        			camera.translate(0, 10f);
+        			camera.computeView();
     				fpsMode = false;
     				fuckKeyList = true;
     			}
-    			
-    			
-    		}
-    		else if(!e.isAutoRepeat()) {
+    		} else if(!e.isAutoRepeat()) {
     			if(fuckKeyList) {
     				fuckKeyList = false;
-    			}
-    			else {
-    				frame = frame.translate(0, 0, -10f);
+    			} else {
+    				camera.translate(0, -10f);
+    				camera.computeView();
         			//camera.firstPerson(camera.getView());
     				fpsMode = true;
     				fuckKeyList = true;
     			}
     		}
     	}
-		
 	}
 }

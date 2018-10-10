@@ -51,7 +51,6 @@ public class World extends Application3D implements KeyListener {
     	super("Assignment 2", 2000, 2000);
     	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
-        //camera = new Camera(); // Creates a camera
         try {
 			person = new Person(terrain);
 		} catch (IOException e) {
