@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import unsw.graphics.geometry.Point2D;
+import unsw.graphics.geometry.TriangleMesh;
 
 /**
  * COMMENT: Comment Road 
@@ -14,6 +15,7 @@ public class Road {
 
     private List<Point2D> points;
     private float width;
+    private TriangleMesh triMesh;
     
     /**
      * Create a new road with the specified spine 
@@ -113,13 +115,28 @@ public class Road {
      * 
      * @param initPoints
      */
-    public void makeRoad(List<Point2D> initPoints) {
-    	List<Point2D> points = new ArrayList<Point2D>();
-    	for (int i = 0; i < initPoints.size(); i++) {
-    		Point2D point = new Point2D(initPoints.get(i).getX() + width, initPoints.get(i).getY());
-    		points.add(point);
+    public void makeRoad() {
+    	List<Point2D> points2 = new ArrayList<Point2D>();
+    	float xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+    	for (int i = 0; i < points.size(); i++) {
+    		Point2D p = new Point2D(points.get(i).getX() + width, points.get(i).getY());
+    		points2.add(p);
+    		if (p.getX() < xMin) // set xMin
+    			xMin = p.getX();
+    		if (p.getX() > xMax) // set xMax
+    			xMax = p.getX();
+    		if (p.getY() < yMin) // set yMin
+    			yMin = p.getY();
+    		if (p.getY() > yMax) // set yMax
+    			yMax = p.getY();
+
+
     	}
     	
+    	
+    	
+    	
+    	// make triangle mesh 
     	
     }
 

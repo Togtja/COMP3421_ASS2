@@ -20,22 +20,28 @@ public class Camera implements  KeyListener {
     private float myRotation; //normalised to the range [-180..180)
     private float myScale;
     private float myAspectRatio;
+    private float xPos;
+    private float zPos;
+    private float yPos;
+    
 
     public Camera() {
     	viewFrame = CoordFrame3D.identity();
-    	myRotation = 0;
+    	myRotation = 180;
         myScale = 1;
         myTranslation = new Point3D(0,0,0);
         myAspectRatio = 1;
+        xPos = 0; yPos = 0; zPos = 0;
     }
     
     public Camera(Terrain t) {
         viewFrame = CoordFrame3D.identity();
-        myRotation = 0;
+        myRotation = 180;
         myScale = 1;
         myTranslation = new Point3D(0,0,0);
         myAspectRatio = 1;
         terrain = t;
+        xPos = 0; yPos = 0; zPos = 0; 
     }
 
     public void setRotation(float rotation) {
@@ -93,10 +99,19 @@ public class Camera implements  KeyListener {
     
     public void translate(float dx, float dz) {
     	float dy;
-    	if (checkTerrainBounds(myTranslation.getX(), myTranslation.getZ()) == true)
-    		dy = terrain.altitude(myTranslation.getX() + dx, myTranslation.getZ() + dz) - myTranslation.getY(); 
-    	else 
-    		dy = 0;
+    	//float yPrev = yPos;
+        xPos += dx;
+        zPos += dz;
+/*
+        System.out.println("x position: " + xPos);
+        System.out.println("z position: " + zPos);
+    	if (checkTerrainBounds(-xPos, -zPos) == true) {
+            yPos = terrain.altitude(-xPos, -zPos);
+            System.out.println("y position: " + yPos);
+    		dy = yPos - yPrev; 
+    	} else { */
+    	dy = 0;
+    	//}
     	myTranslation = myTranslation.translate(dx, dy, dz);
     }
     
@@ -125,7 +140,7 @@ public class Camera implements  KeyListener {
     public boolean checkTerrainBounds(float x, float z) {
     	int width = terrain.getWidth();
     	int depth = terrain.getDepth();
-    	 if (x >= width || x < width || z >= depth || z < depth) { // index out of bounds 
+    	 if (x >= width || x < 0 || z >= depth || z < 0) { // index out of bounds 
          	return false;
          }
     	return true; // index within terrain bounds 
@@ -138,22 +153,40 @@ public class Camera implements  KeyListener {
     	double dx = 0, dy = 0, dz = 0; 
     	float rotShift = 0;
     	float dir = 0;
+    	float speed = 0.3f;
     	
-        switch(e.getKeyCode()) {        
+        switch(e.getKeyCode()) {  
+        case KeyEvent.VK_D:							// D key pressed, camera step right 
+        	dir = 1;
+  			rads = Math.toRadians(myRotation); 
+  			dz = dir*Math.cos(rads)*speed;
+  			dx = 1*0.3f; // dir*Math.sin(rads)*0.3f;
+  			translate((float) dx, (float) dz);
+        	break;
+        
+        case KeyEvent.VK_A:							// A key pressed, step left 
+        	dir = -1;
+  			rads = Math.toRadians(myRotation); 
+  			dz = dir*Math.cos(rads)*speed;
+  			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;
+  			translate((float) dx, (float) dz);
+        	break;
+        
+        
         //Delivery keys
   		case KeyEvent.VK_UP:						// Up arrow pressed, camera moves forward 
   			dir = -1;
   			rads = Math.toRadians(myRotation); 
-  			dz = dir*Math.cos(rads)*0.3f;
-  			dx = dir*Math.sin(rads)*0.3f;
+  			dz = dir*Math.cos(rads)*speed;
+  			dx = dir*Math.sin(rads)*speed;
   			translate((float) dx, (float) dz);
   			break;
   			
   		case KeyEvent.VK_DOWN:						// Down arrow pressed, camera moves backwards
   			dir = 1;
   			rads = Math.toRadians(myRotation);
-  			dz = dir*Math.cos(rads)*0.3f;
-  			dx = dir*Math.sin(rads)*0.3f;
+  			dz = dir*Math.cos(rads)*speed;
+  			dx = dir*Math.sin(rads)*speed;
   			translate((float) dx, (float) dz);
   			break;
   			

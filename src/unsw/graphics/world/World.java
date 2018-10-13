@@ -46,6 +46,8 @@ public class World extends Application3D implements KeyListener {
     private int indicesName;
 
     private Texture grass;
+    private Texture trees;
+    private Texture road; 
 
     public World(Terrain terrain) {
     	super("Assignment 2", 2000, 2000);
@@ -82,23 +84,14 @@ public class World extends Application3D implements KeyListener {
 		getWindow().addKeyListener(person.getCam());
 		getWindow().addKeyListener(this);
         
-
-		person.init(gl);
-		
-        //terrainMesh = terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain 
-		
+		person.init(gl);		
 		
         terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
 		terrainMesh = terrain.getTriMesh();
         terrainMesh.init(gl);
         
-        //camera = new Camera(terrainMesh);
-        
-        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
-        shader.use(gl);
-        
-        //setLighting(gl); // set the lighting properties for the shader 
-      
+        person.setTerrain(terrain);
+       
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
 
@@ -106,27 +99,35 @@ public class World extends Application3D implements KeyListener {
         texCoordsName = names[1];
         indicesName = names[2];
         
-        //camera.setView(gl);
-        //camera.firstPerson(gl, camera.getView());
+        
+        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
+        shader.use(gl);
+        
+        grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
+        trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
+        road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
-        grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         
         Shader.setInt(gl,"tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, grass.getId());
+        gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
 
-        Shader.setPenColor(gl, Color.GREEN);
+        Shader.setPenColor(gl, Color.MAGENTA);
                 
         setLighting(gl); // set the lighting properties for the shader 
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
         terrainMesh.draw(gl, person.getfps());
+                
+        gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
+        
         terrain.drawTrees(gl, person.getfps());
         //person.TrdPerson(gl);
         person.drawPerson(gl);
@@ -140,19 +141,10 @@ public class World extends Application3D implements KeyListener {
 		terrainMesh.destroy(gl);
         //gl.glDeleteBuffers(2, new int[] { indicesName, verticesName }, 0);
         //terrain.destroy(gl);
+        //grass.destroy(gl);
+        //trees.destroy(gl);
 	}
 
-	
-    /**
-     * Draw a terrain centered around (0,0) with bounds of length 1 in each
-     * direction.
-     * 
-     * @param gl
-     * @param frame
-     */
-    private void drawTerrain(GL3 gl, CoordFrame3D frame) {
-        
-    }
 
 	@Override
 	public void reshape(GL3 gl, int width, int height) {
@@ -164,16 +156,15 @@ public class World extends Application3D implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		person.keyPressed(e); // do what camera would do 
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		person.keyReleased(e); // do what camera would do 
-		switch(e.getKeyCode()) {
+		/*switch(e.getKeyCode()) {
     	case KeyEvent.VK_R:
     		
-		}
+		}*/
 	}
 	
     /**
