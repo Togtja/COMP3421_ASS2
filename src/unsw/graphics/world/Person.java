@@ -30,9 +30,8 @@ public class Person implements KeyListener {
     private Terrain terrain;
     
     public Person(Terrain t) throws IOException {
-    	
-    	camera = new Camera(); // Creates a camera
-    	position = new Point3D(0f, 0f, 6f);
+    	camera = new Camera(t);//Camera(); // Creates a camera
+    	position = new Point3D(0f, 0.5f, -6f);
     	terrain = t;
         model = new TriangleMesh("res/models/bunny.ply");      
     }
@@ -40,17 +39,19 @@ public class Person implements KeyListener {
     public void init(GL3 gl) {
     	model.init(gl);
         camera.setView(gl);
-    	frame = camera.getView().translate(position).scale(5f, 5f, 5f);
-        
+    	frame = camera.getView().translate(position).rotateY(180).scale(5f, 5f, 5f);
     }
+    
     public Camera getCam() {
     	return camera;
     }
+    
     public void drawPerson(GL3 gl) {
 
         Shader.setPenColor(gl, Color.BLUE);
     	model.draw(gl, frame);
     }
+    
     public CoordFrame3D getfps() {
     	return camera.getView();
     }
@@ -61,18 +62,27 @@ public class Person implements KeyListener {
     	//DO WHEN WE HAVE ROATION SOLVED IN CAMERA
     	//I add y position everytime, maybe set it instead of adding
     	//System.out.println("\n\n\nX is " + camera.getX() + "\nY is " + camera.getY() + "\nZ is " + camera.getZ());
-    	/*
-    	if(-camera.getX() > 0 && -camera.getX() < terrain.getWidth()) {
-      	  if (-camera.getZ() > 0 && -camera.getZ() < terrain.getDepth()) {
-      		camera.setView(camera.getView().translate(0, -terrain.altitude(-camera.getX(), -camera.getY()), 0));
+/*    	float dx, dz;
+    	double rads;
+    	
+    	if(-camera.getPosition().getX() > 0 && -camera.getPosition().getX() < terrain.getWidth()) {
+      	  if (-camera.getPosition().getZ() > 0 && -camera.getPosition().getZ() < terrain.getDepth()) {
+      		//camera.setView(camera.getView().translate(0, -terrain.altitude(-camera.getPosition().getX(), -camera.getPosition().getZ()), 0));
+      		  //camera.setPosition(new Point3D(-camera.getPosition().getX(), -terrain.altitude(-camera.getPosition().getX(), -camera.getPosition().getZ()), -camera.getPosition().getZ()));
+      		  //camera.computeView();
+      		  rads = Math.toRadians(camera.getRotation()); 
+      		  dz = (float) Math.cos(rads)*0.3f;
+      		  dx = (float) Math.sin(rads)*0.3f;
+      		  camera.translate(dx, dz);
       	  }
-    	}
-    	else {
+    	}*/
+/*    	else {
     		camera.setView(frame);
     	}*/
     }
     //public void key 
 	@Override
+
 	public void keyReleased(KeyEvent e) {
 		//camera.keyReleased(e);
 		
@@ -88,7 +98,16 @@ public class Person implements KeyListener {
         		//camera.firstPerson(camera.getView());
     			fpsMode = true;
     			
+
     		}
     	}
 	}
+	
+    public void setTerrain(Terrain terrain) {
+    	this.terrain = terrain;
+    }
+    
+    public Terrain getTerrain() {
+    	return terrain;
+    }
 }
