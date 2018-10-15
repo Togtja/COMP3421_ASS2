@@ -20,7 +20,6 @@ public class Person implements KeyListener {
     private CoordFrame3D frame;
     private Camera camera;
     private boolean fpsMode = true;
-    private boolean fuckKeyList = true;
     
     // from model viewer 
     private static final boolean USE_LIGHTING = true;
@@ -72,39 +71,24 @@ public class Person implements KeyListener {
     		camera.setView(frame);
     	}*/
     }
-
+    //public void key 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		camera.keyReleased(e);
+		//camera.keyReleased(e);
 		
 		switch(e.getKeyCode()) {
     	case KeyEvent.VK_R:
     		if(fpsMode && !e.isAutoRepeat()) {
-
-    			if(fuckKeyList) {
-    				fuckKeyList = false;
-    			}
-    			else {
-        			camera.setView(frame);
-        			frame = frame.translate(0, 0, 10f);
-    				fpsMode = false;
-    				fuckKeyList = true;
-    			}
-    			
-    			
+        		camera.setView(frame);
+        		frame = frame.translate(0, 0, 10f);
+    			fpsMode = false;
     		}
     		else if(!e.isAutoRepeat()) {
-    			if(fuckKeyList) {
-    				fuckKeyList = false;
-    			}
-    			else {
-    				frame = frame.translate(0, 0, -10f);
-        			//camera.firstPerson(camera.getView());
-    				fpsMode = true;
-    				fuckKeyList = true;
-    			}
+    			frame = frame.translate(0, 0, -10f);
+        		//camera.firstPerson(camera.getView());
+    			fpsMode = true;
+    			
     		}
     	}
-		
 	}
 }

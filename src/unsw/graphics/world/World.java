@@ -170,11 +170,7 @@ public class World extends Application3D implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		person.keyReleased(e); // do what camera would do 
-		switch(e.getKeyCode()) {
-    	case KeyEvent.VK_R:
-    		
-		}
+		//person.keyReleased(e); // do what camera would do 
 	}
 	
     /**
