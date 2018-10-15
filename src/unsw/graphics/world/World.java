@@ -146,8 +146,9 @@ public class World extends Application3D implements KeyListener {
         terrain.drawRoads(gl, person.getfps());
         //terrain.drawRoads(gl, drawFrame);
         // person.TrdPerson(gl);
-        person.drawPerson(gl);
-
+        if(!person.isFps()) {
+        	person.drawPerson(gl);
+        }
 
     }
 
