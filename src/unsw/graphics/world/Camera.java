@@ -17,7 +17,10 @@ public class Camera implements  KeyListener {
     private CoordFrame3D viewFrame;
     private Terrain terrain;
     private Point3D myTranslation;
-    private float myRotation; //normalised to the range [-180..180)
+    private float myRotX;
+    private float myRotY; 
+    private float myRotZ;
+    
     private float myScale;
     private float myAspectRatio;
     private float xPos;
@@ -27,7 +30,9 @@ public class Camera implements  KeyListener {
 
     public Camera() {
     	viewFrame = CoordFrame3D.identity();
-    	myRotation = 180;
+    	myRotX = 0;
+    	myRotY = 180;
+    	myRotZ = 0;
         myScale = 1;
         myTranslation = new Point3D(0,0,0);
         myAspectRatio = 1;
@@ -36,7 +41,9 @@ public class Camera implements  KeyListener {
     
     public Camera(Terrain t) {
         viewFrame = CoordFrame3D.identity();
-        myRotation = 180;
+        myRotX = 0;
+    	myRotY = 180;
+    	myRotZ = 0;
         myScale = 1;
         myTranslation = new Point3D(0,0,0);
         myAspectRatio = 1;
@@ -44,11 +51,23 @@ public class Camera implements  KeyListener {
         xPos = 0; yPos = 0; zPos = 0; 
     }
 
-    public void setRotation(float rotation) {
-        myRotation = MathUtil.normaliseAngle(rotation);
+    public void setRotX(float rotation) {
+        myRotX = MathUtil.normaliseAngle(rotation);
     }
-    public float getRotation() {
-        return myRotation;
+    public float getRotX() {
+        return myRotX;
+    }
+    public void setRotY(float rotation) {
+        myRotY = MathUtil.normaliseAngle(rotation);
+    }
+    public float getRotY() {
+        return myRotY;
+    }
+    public void setRotZ(float rotation) {
+        myRotZ = MathUtil.normaliseAngle(rotation);
+    }
+    public float getRotZ() {
+        return myRotZ;
     }
     
     public float getScale() {
@@ -97,7 +116,7 @@ public class Camera implements  KeyListener {
         return myAspectRatio;
     }
     
-    public void translate(float dx, float dz) {
+    public void translateXZ(float dx, float dz) {
     	float dy;
     	//float yPrev = yPos;
         xPos += dx;
@@ -115,13 +134,26 @@ public class Camera implements  KeyListener {
     	myTranslation = myTranslation.translate(dx, dy, dz);
     }
     
+    public void translateY(float dy) {
+    	yPos += dy;
+    	myTranslation = myTranslation.translate(0, dy, 0);
+    }
+    
     public void scale(float factor) {
         myScale *= factor;
     }
     
-    public void rotate(float angle) {
-        myRotation += angle;
-        myRotation = MathUtil.normaliseAngle(myRotation);
+    public void rotateX(float angle) {
+        myRotX += angle;
+        myRotX = MathUtil.normaliseAngle(myRotX);
+    }
+    public void rotateY(float angle) {
+        myRotY += angle;
+        myRotY = MathUtil.normaliseAngle(myRotY);
+    }
+    public void rotateZ(float angle) {
+        myRotZ += angle;
+        myRotZ = MathUtil.normaliseAngle(myRotZ);
     }
     
     public void computeView() {
@@ -129,7 +161,7 @@ public class Camera implements  KeyListener {
     			.scale(1/getAspectRatio(), 1, 1)     	// compute view transform for dimensions of screen
     			//further transformations to account for the camera's global position, rotation and scale
                 .scale(1/getScale(), 1/getScale(), 1/getScale())
-                .rotateY(-1*getRotation())
+                .rotateY(-1*getRotY()).rotateX(-1*getRotX()).rotateZ(-1*getRotZ())
                 .translate(-1*getPosition().getX(), -1*getPosition().getY(), -1*getPosition().getZ());
     }
     
@@ -158,48 +190,74 @@ public class Camera implements  KeyListener {
         switch(e.getKeyCode()) {  
         case KeyEvent.VK_D:							// D key pressed, camera step right 
         	dir = 1;
-  			rads = Math.toRadians(myRotation); 
+  			rads = Math.toRadians(myRotY); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = 1*0.3f; // dir*Math.sin(rads)*0.3f;
-  			translate((float) dx, (float) dz);
+  			translateXZ((float) dx, (float) dz);
         	break;
         
         case KeyEvent.VK_A:							// A key pressed, step left 
         	dir = -1;
-  			rads = Math.toRadians(myRotation); 
+  			rads = Math.toRadians(myRotY); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;
-  			translate((float) dx, (float) dz);
+  			translateXZ((float) dx, (float) dz);
+        	break;
+        	
+        case KeyEvent.VK_W: // rotate camera up around x/z axis 
+        	/*dir = 1;
+  			rotShift = dir*1;
+  			rotateZ(rotShift);
+  			rotateX(rotShift);*/
+        	
+        	dir = 1;
+  			rads = Math.toRadians(myRotZ); 
+  			dy = dir*Math.cos(rads)*speed;
+  			//dx = dir*Math.sin(rads)*speed;
+  			translateY((float) dy);
+        	break;
+        	
+        case KeyEvent.VK_S: // rotate camera down around x/z axis 
+        	/*dir = -1;
+  			rotShift = dir*1;
+  			rotateZ(rotShift);
+  			rotateX(rotShift);
+  			*/
+  			dir = -1;
+  			rads = Math.toRadians(myRotZ); 
+  			dy = dir*Math.cos(rads)*speed;
+  			//dx = dir*Math.sin(rads)*speed;
+  			translateY((float) dy);
         	break;
         
         
         //Delivery keys
   		case KeyEvent.VK_UP:						// Up arrow pressed, camera moves forward 
   			dir = -1;
-  			rads = Math.toRadians(myRotation); 
+  			rads = Math.toRadians(myRotY); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*Math.sin(rads)*speed;
-  			translate((float) dx, (float) dz);
+  			translateXZ((float) dx, (float) dz);
   			break;
   			
   		case KeyEvent.VK_DOWN:						// Down arrow pressed, camera moves backwards
   			dir = 1;
-  			rads = Math.toRadians(myRotation);
+  			rads = Math.toRadians(myRotY);
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*Math.sin(rads)*speed;
-  			translate((float) dx, (float) dz);
+  			translateXZ((float) dx, (float) dz);
   			break;
   			
   		case KeyEvent.VK_LEFT:
   			dir = 1;
   			rotShift = dir*1;
-  			rotate(rotShift);
+  			rotateY(rotShift);
         	break;
         	
   		case KeyEvent.VK_RIGHT:
   			dir = -1;
   			rotShift = dir*1;
-  			rotate(rotShift);
+  			rotateY(rotShift);
         	break;
         }
         

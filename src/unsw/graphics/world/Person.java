@@ -93,7 +93,7 @@ public class Person implements KeyListener {
     				fuckKeyList = false;
     			} else {
     				camera.setView(frame);
-        			camera.translate(0, 10f);
+        			camera.translateXZ(0, 10f);
         			camera.computeView();
     				fpsMode = false;
     				fuckKeyList = true;
@@ -102,7 +102,7 @@ public class Person implements KeyListener {
     			if(fuckKeyList) {
     				fuckKeyList = false;
     			} else {
-    				camera.translate(0, -10f);
+    				camera.translateXZ(0, -10f);
     				camera.computeView();
         			//camera.firstPerson(camera.getView());
     				fpsMode = true;

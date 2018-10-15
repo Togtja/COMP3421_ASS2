@@ -48,11 +48,14 @@ public class World extends Application3D implements KeyListener {
     private Texture grass;
     private Texture trees;
     private Texture road; 
+    
+    private CoordFrame3D drawFrame;
 
     public World(Terrain terrain) {
     	super("Assignment 2", 2000, 2000);
     	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
+        
         try {
 			person = new Person(terrain);
 		} catch (IOException e) {
@@ -112,6 +115,9 @@ public class World extends Application3D implements KeyListener {
     public void display(GL3 gl)  {
         super.display(gl);
         
+        // shifted drawing coord frame based on width and depth of terrain 
+        setDrawFrame();
+        
         Shader.setInt(gl,"tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
@@ -123,13 +129,23 @@ public class World extends Application3D implements KeyListener {
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
-        terrainMesh.draw(gl, person.getfps());
-                
+        // terrainMesh.draw(gl, person.getfps());
+        terrainMesh.draw(gl, drawFrame);
+        
         gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         
-        terrain.drawTrees(gl, person.getfps());
-        //person.TrdPerson(gl);
+        // terrain.drawTrees(gl, person.getfps());
+        terrain.drawTrees(gl, drawFrame);
+        
+        //gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
+        //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
+        Shader.setPenColor(gl, Color.BLACK);
+
+        //System.out.println(terrain.altitude( 1.5f, 3f));
+        // terrain.drawRoads(gl, person.getfps());
+        terrain.drawRoads(gl, drawFrame);
+        // person.TrdPerson(gl);
         person.drawPerson(gl);
 
 
@@ -183,5 +199,15 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
+	}
+	
+	public void setDrawFrame() {
+		float dx = (terrain.getWidth()-1)/2;
+		float dz = (terrain.getDepth()-1)/2;
+		drawFrame = person.getfps().translate(new Point3D(dx, 0, dz));
+	}
+	
+	public CoordFrame3D getDrawFrame() {
+		return drawFrame;
 	}
 }
