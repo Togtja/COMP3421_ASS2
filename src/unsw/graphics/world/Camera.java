@@ -45,10 +45,11 @@ public class Camera implements  KeyListener {
     	myRotY = 180;
     	myRotZ = 0;
         myScale = 1;
-        myTranslation = new Point3D(0,0,0);
+        xPos = 0; yPos = 0; zPos = 0; 
+        myTranslation = new Point3D(xPos,yPos,zPos);
         myAspectRatio = 1;
         terrain = t;
-        xPos = 0; yPos = 0; zPos = 0; 
+        
     }
 
     public void setRotX(float rotation) {
@@ -85,6 +86,11 @@ public class Camera implements  KeyListener {
     public void setPosition(float x, float z) {
     	float y = terrain.altitude(x, z);
         setPosition(new Point3D(x,y,z));
+    }    
+    public void setHeight(float offSet) {
+    	float y = terrain.altitude(myTranslation.getX(), myTranslation.getZ());
+        setPosition(new Point3D(myTranslation.getX(),y + offSet,myTranslation.getZ()));
+        computeView();
     }
     
     public void setPosition(Point3D p) {
@@ -260,8 +266,19 @@ public class Camera implements  KeyListener {
   			rotateY(rotShift);
         	break;
         }
-        
-        computeView();        
+        computeView();
+        float offSet = 1;
+    	if(this.getPosition().getX() > 0 
+    			&& this.getPosition().getX() < terrain.getWidth()) {
+      	  if (this.getPosition().getZ() > 0
+      			  && this.getPosition().getZ() < terrain.getDepth()) {
+      		//Some of-setting needs to be done
+      		  this.setHeight(offSet);
+      		  
+      	  }
+    	}
+    	System.out.println("Camera pos (" + this.getPosition().getX() + ", "
+				  + this.getPosition().getY() + ", " + this.getPosition().getZ() + ")\n");
     }
     
     //How to debug control
