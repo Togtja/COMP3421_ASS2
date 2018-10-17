@@ -21,6 +21,7 @@ import unsw.graphics.Point2DBuffer;
 import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
+import unsw.graphics.Vector3;
 import unsw.graphics.world.Person;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -104,6 +105,7 @@ public class World extends Application3D implements KeyListener {
         
         
         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
+        // Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
         shader.use(gl);
         
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
@@ -123,7 +125,7 @@ public class World extends Application3D implements KeyListener {
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
 
-        Shader.setPenColor(gl, Color.MAGENTA);
+        Shader.setPenColor(gl, Color.PINK);
                 
         setLighting(gl); // set the lighting properties for the shader 
 
@@ -140,7 +142,7 @@ public class World extends Application3D implements KeyListener {
         
         //gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
-        Shader.setPenColor(gl, Color.BLACK);
+        Shader.setPenColor(gl, Color.WHITE);
 
         //System.out.println(terrain.altitude( 1.5f, 3f));
         // terrain.drawRoads(gl, person.getfps());
@@ -191,8 +193,9 @@ public class World extends Application3D implements KeyListener {
      */
 	public void setLighting(GL3 gl) {
 		 // Set the lighting properties
-        Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
-        Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+        //Shader.setViewMatrix(gl, person.getfps().getMatrix());
+  		Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);

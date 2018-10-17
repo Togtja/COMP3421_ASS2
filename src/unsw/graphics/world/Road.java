@@ -7,8 +7,10 @@ import java.util.List;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
 
+import unsw.graphics.Matrix3;
 import unsw.graphics.Point2DBuffer;
 import unsw.graphics.Point3DBuffer;
+import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -22,7 +24,7 @@ public class Road {
 
     private List<Point2D> points;
     private float width;
-    
+        
     private TriangleMesh triMesh;
     float altitude;
     
@@ -98,20 +100,20 @@ public class Road {
         Point2D p3 = points.get(i++);
         
 
-        float x = b(0, t) * p0.getX() + b(1, t) * p1.getX() + b(2, t) * p2.getX() + b(3, t) * p3.getX();
-        float y = b(0, t) * p0.getY() + b(1, t) * p1.getY() + b(2, t) * p2.getY() + b(3, t) * p3.getY();        
+        float x = b3(0, t) * p0.getX() + b3(1, t) * p1.getX() + b3(2, t) * p2.getX() + b3(3, t) * p3.getX();
+        float y = b3(0, t) * p0.getY() + b3(1, t) * p1.getY() + b3(2, t) * p2.getY() + b3(3, t) * p3.getY();        
         
         return new Point2D(x, y);
     }
     
     /**
-     * Calculate the Bezier coefficients
+     * Calculate the Bezier coefficients when m = 3
      * 
      * @param i
      * @param t
      * @return
      */
-    private float b(int i, float t) {
+    private float b3(int i, float t) {
         
         switch(i) {
         
@@ -126,6 +128,31 @@ public class Road {
 
         case 3:
             return t * t * t;
+        }
+        
+        // this should never happen
+        throw new IllegalArgumentException("" + i);
+    }
+    
+    /**
+     * Calculate the Bezier coefficients when m = 2
+     * 
+     * @param i
+     * @param t
+     * @return
+     */
+    private float b2(int i, float t) {
+        
+        switch(i) {
+        
+        case 0:
+            return (1-t) * (1-t);
+
+        case 1:
+            return 2 * (1-t) * t;
+            
+        case 2:
+            return t * t;
         }
         
         // this should never happen
@@ -148,65 +175,102 @@ public class Road {
      * 
      * @param initPoints
      */
-    public void makeRoad(GL3 gl, int width, int depth) {    	
+    public void makeRoad(GL3 gl) { //, int width, int depth) {    	
     	int size = 0, count = 0;
-    	
-    	// to get number of points in curve 
-    	List<Point2D> curve = getPointsOnCurve(); // use function points(t) to get point (x,y) on curve 
-    	size = curve.size(); // get size of curve1
-    	
-    	// to get points in both curves 
-    	List<Point2D> curve1 = new ArrayList<Point2D>();
-    	List<Point2D> curve2 = new ArrayList<Point2D>(); // use points on curve and width of road to get points on second curve 
-    	for (int i = 0; i < size; i++) {
-    		curve1.add(new Point2D(getPointsOnCurve().get(i).getX() - width/2, getPointsOnCurve().get(i).getY()));
-    	    curve2.add(new Point2D(getPointsOnCurve().get(i).getX() + width/2, getPointsOnCurve().get(i).getY()));
+        float w  = this.width/2;
+        float step = 0.05f;
+        float alt = altitude + 0.001f;
+        
+        List<Point2D> curve = new ArrayList<Point2D>(); // use points on curve and width of road to get points on second curve 
+        //curve = getPointsOnCurve();
+        for (float t = 0; t < 1; t+=step) {
+    		curve.add(point(t));
     	}
-    	
-    	// check points with array bounds of terrain
-    	curve1 = checkPoints(width, depth, curve1);
-    	curve2 = checkPoints(width, depth, curve2);
-    	
-    	// Make triangle mesh
-    	List<Point3D> vertices = new ArrayList<Point3D>();
+        
+        List<Point3D> curve1 = new ArrayList<Point3D>();
+        List<Point3D> curve2 = new ArrayList<Point3D>();
+/*        
+        for (float t = 0; t < 1.00; t+=0.01) {
+    		//curve.add(point(t));
+        	Vector3 normal = normal(tangent(t)).normalize();
+        	
+        	curve1.add(new Point3D(-w * normal.getX() + point(t).getX(), alt, -w*normal.getY() + point(t).getY()));
+        	curve2.add(new Point3D(w * normal.getX() + point(t).getX(), alt, w*normal.getY() + point(t).getY()));
+        	
+        	// debug 
+        	System.out.println("x1: " + curve1.get(count).getX());
+        	System.out.println("z1: " + curve1.get(count).getZ());
+        	System.out.println(" ");
+        	System.out.println("x2: " + curve2.get(count).getX());
+        	System.out.println("z2: " + curve2.get(count).getZ());
+        	System.out.println(" ");
+
+        	
+        	count++;
+    	}*/
+        
+        size = curve.size();
+        	
+        for (int i = 0; i < size; i++) {
+        	curve1.add(new Point3D(curve.get(i).getX(), alt, curve.get(i).getY()-w));
+        	curve2.add(new Point3D(curve.get(i).getX(), alt, curve.get(i).getY()+w));
+        }
+        
+        
+        List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         List<Point2D> texCoords = new ArrayList<Point2D>();
-    	for (int i = 0; i < size - 1; i++) {
- 		   	// generate vertices points 
-    		Point2D A = curve1.get(i);
- 		   	Point2D B = curve2.get(i);
- 		   	Point2D C = curve1.get(i+1);
- 		   	Point2D D = curve2.get(i+1);
- 		
- 		   	// add vertices points to vertices list 
- 			vertices.add(new Point3D(A.getX(), altitude+0.01f, A.getY())); //need to do altitude not 0
- 			vertices.add(new Point3D(C.getX(), altitude+0.01f, C.getY()));
- 			vertices.add(new Point3D(D.getX(), altitude+0.01f, D.getY()));
- 			vertices.add(new Point3D(B.getX(), altitude+0.01f, B.getY())); 
- 			
- 			// add indices to indices list 
- 			indices.add(count*4);			// add A 
- 			indices.add(count*4 + 1);		// add C
- 			indices.add(count*4 + 2);		// add D
- 			indices.add(count*4);			// add A 
- 			indices.add(count*4 + 2);		// add B 
- 			indices.add(count*4 + 3);		// add C
+        
+        drawTriangles(vertices, indices, texCoords, size, curve1, curve2);
 
- 			// add tex coords to tex coords list 
- 			texCoords.add(new Point2D(0,0));
- 			texCoords.add(new Point2D(0,1));
- 			texCoords.add(new Point2D(1,1));
- 			texCoords.add(new Point2D(1,0));
-
- 			count++;
-    	}
-    	
-    	setVertexBuffer(vertices);
+        setVertexBuffer(vertices);
     	setIndicesBuffer(indices);
         setTexCoordBuffer(texCoords);
         
         triMesh = new TriangleMesh(vertices, indices, true, texCoords);	// initialize triangle mesh for terrain
+        //triMesh = new TriangleMesh(vertices, true, texCoords);
     	triMesh.init(gl);
+    }
+    
+    
+    
+    private void drawTriangles(List<Point3D> vertices, List<Integer> indices, List<Point2D> texCoords, int size, List<Point3D> curve1, List<Point3D> curve2) {
+    	int count = 0;
+        for (int i = 0; i < size - 1; i++) {
+			// generate vertices points 
+			Point3D A = curve1.get(i); 		// new Point3D(i, altitudes[i][k], k);
+			Point3D B = curve1.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k], k);
+			Point3D C = curve2.get(i); 		// new Point3D(i, altitudes[i][k+1], k+1);
+			Point3D D = curve2.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k+1], k+1);
+			
+			// add vertices points to vertices list 
+			vertices.add(A); // 0
+			vertices.add(D); // 1
+			vertices.add(C); // 2
+			vertices.add(B); // 3 
+			
+			// add indices to indices list 
+			indices.add(count*4);			// add A 
+			indices.add(count*4 + 1);		// add C
+			indices.add(count*4 + 2);		// add D
+			indices.add(count*4);			// add A 
+			indices.add(count*4 + 3);		// add B 
+			indices.add(count*4 + 2);		// add C
+
+			// add tex coords to tex coords list 
+			texCoords.add(new Point2D(0,0));
+			texCoords.add(new Point2D(0,1));
+			texCoords.add(new Point2D(1,1));
+			texCoords.add(new Point2D(1,0));
+
+			//numTriangles = numTriangles + 2; 
+			count++;
+        	
+       		/*texCoords.add(new Point2D(curve1.get(i).getX(), curve1.get(i).getY())); 
+       		vertices.add(curve1.get(i));
+       		texCoords.add(new Point2D(curve2.get(i).getX(), curve2.get(i).getY()));
+       		vertices.add(curve2.get(i));*/
+		}
     }
     
    public List<Point2D> getPointsOnCurve(){
@@ -306,5 +370,52 @@ public class Road {
    
    public float getAltitude() {
 	   return altitude;
+   }
+   
+   public Vector3 tangent(float t) {	   
+	   int i = 0; 
+	   
+	   Point2D p0 = points.get(i++);
+       Point2D p1 = points.get(i++);
+       Point2D p2 = points.get(i++);
+       Point2D p3 = points.get(i++);
+       
+       Point2D p10 = new Point2D(p1.getX() - p0.getX(), p1.getY() - p0.getY());
+       Point2D p21 = new Point2D(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+       Point2D p32 = new Point2D(p3.getX() - p2.getX(), p3.getY() - p2.getY());
+	   
+	   
+	   float x = 3*(b2(0, t) * p10.getX() + b2(1, t) * p21.getX() + b2(2, t) * p32.getX());   
+       float y = 3*(b2(0, t) * p10.getY() + b2(1, t) * p21.getY() + b2(2, t) * p32.getY());      
+
+       Vector3 k = new Vector3(x,y,0);
+       
+	   return k.normalize(); 
+   }
+   
+   public Vector3 normal(Vector3 k) {
+	   return new Vector3(-1*k.getY(), k.getX(), 0); // i = (-k2, k1, 0)
+   }
+   
+   public Vector3 j(Vector3 k, Vector3 i) {	   
+	   return k.cross(i); // j = k x i
+   }
+   
+   public Matrix3 frenetFrame(Vector3 i, Vector3 j, Vector3 k) {
+	   float[] values = {i.getX(), i.getY(), i.getZ(), j.getX(), j.getY(), j.getZ(), k.getX(), k.getY(), k.getZ()};
+	   return new Matrix3(values);
+   }
+   
+   public Point2D frenetTranslation(float t) {
+	   Vector3 p0 = new Vector3(0, 0.1f, 0);
+	   
+	   Vector3 k = tangent(t);
+	   Vector3 i = normal(k);
+	   Vector3 j = j(k,i);
+	   Matrix3 frenetFrame = frenetFrame(i,j,k);
+	   
+	   Vector3 p1 = frenetFrame.multiply(p0);
+	   
+	   return new Point2D(p1.getX(), p1.getY());
    }
 }
