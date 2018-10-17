@@ -53,8 +53,8 @@ public class World extends Application3D implements KeyListener {
     private CoordFrame3D drawFrame;
 
     public World(Terrain terrain) {
-    	super("Assignment 2", 2000, 2000);
-    	//super("Assignment 2", 600, 600);
+    	//super("Assignment 2", 2000, 2000);
+    	super("Assignment 2", 600, 600);
         this.terrain = terrain;
         
         try {
@@ -118,7 +118,7 @@ public class World extends Application3D implements KeyListener {
         super.display(gl);
         
         // shifted drawing coord frame based on width and depth of terrain 
-        setDrawFrame();
+        //setDrawFrame();
         
         Shader.setInt(gl,"tex", 0);
         
@@ -131,25 +131,26 @@ public class World extends Application3D implements KeyListener {
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
-        // terrainMesh.draw(gl, person.getfps());
-        terrainMesh.draw(gl, drawFrame);
+        terrainMesh.draw(gl, person.getfps());
+        //terrainMesh.draw(gl, drawFrame);
         
         gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         
-        // terrain.drawTrees(gl, person.getfps());
-        terrain.drawTrees(gl, drawFrame);
+        terrain.drawTrees(gl, person.getfps());
+        //terrain.drawTrees(gl, drawFrame);
         
         //gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         Shader.setPenColor(gl, Color.WHITE);
 
         //System.out.println(terrain.altitude( 1.5f, 3f));
-        // terrain.drawRoads(gl, person.getfps());
-        terrain.drawRoads(gl, drawFrame);
+        terrain.drawRoads(gl, person.getfps());
+        //terrain.drawRoads(gl, drawFrame);
         // person.TrdPerson(gl);
-        person.drawPerson(gl);
-
+        if(!person.isFps()) {
+        	person.drawPerson(gl);
+        }
 
     }
 
@@ -173,16 +174,13 @@ public class World extends Application3D implements KeyListener {
 	// implement methods to implement KeyListener interface
 	@Override
 	public void keyPressed(KeyEvent e) {
-		person.keyPressed(e); // do what camera would do 
+		//person.keyPressed(e); // do what camera would do 
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		person.keyReleased(e); // do what camera would do 
-		/*switch(e.getKeyCode()) {
-    	case KeyEvent.VK_R:
-    		
-		}*/
+		//person.keyReleased(e); // do what camera would do 
+
 	}
 	
     /**

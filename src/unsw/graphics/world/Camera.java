@@ -42,13 +42,14 @@ public class Camera implements  KeyListener {
     public Camera(Terrain t) {
         viewFrame = CoordFrame3D.identity();
         myRotX = 0;
-    	myRotY = 180;
+    	myRotY = 230;
     	myRotZ = 0;
         myScale = 1;
-        myTranslation = new Point3D(0,0,0);
+        xPos = 0; yPos = 1; zPos = 0; 
+        myTranslation = new Point3D(xPos,yPos,zPos);
         myAspectRatio = 1;
         terrain = t;
-        xPos = 0; yPos = 0; zPos = 0; 
+        
     }
 
     public void setRotX(float rotation) {
@@ -85,6 +86,19 @@ public class Camera implements  KeyListener {
     public void setPosition(float x, float z) {
     	float y = terrain.altitude(x, z);
         setPosition(new Point3D(x,y,z));
+    }    
+    //Used to set height for an avatar infront of you
+    public void setHeight(float yOff, float avatar) {
+    	float y = terrain.altitude(myTranslation.getX(), myTranslation.getZ());
+        setPosition(new Point3D(myTranslation.getX(),y + yOff, myTranslation.getZ()));
+        //computeView();
+    }
+    //
+    public void setHeight(float x, float yOff, float z, boolean avatar) {
+
+    	float y = terrain.altitude(x, z);
+        setPosition(new Point3D(myTranslation.getX() ,y + yOff, myTranslation.getZ()));
+        computeView();
     }
     
     public void setPosition(Point3D p) {
@@ -205,29 +219,35 @@ public class Camera implements  KeyListener {
         	break;
         	
         case KeyEvent.VK_W: // rotate camera up around x/z axis 
-        	/*dir = 1;
-  			rotShift = dir*1;
-  			rotateZ(rotShift);
-  			rotateX(rotShift);*/
-        	
-        	dir = 1;
-  			rads = Math.toRadians(myRotZ); 
-  			dy = dir*Math.cos(rads)*speed;
-  			//dx = dir*Math.sin(rads)*speed;
-  			translateY((float) dy);
+        	if(e.isShiftDown()) {
+        		dir = 1;
+        		rotShift = dir*1;
+  				rotateZ(rotShift);
+  				rotateX(rotShift);
+        	}
+        	else {
+        		dir = 1;
+        		rads = Math.toRadians(myRotZ); 
+        		dy = dir*Math.cos(rads)*speed;
+        		//dx = dir*Math.sin(rads)*speed;
+        		translateY((float) dy);
+        	}
         	break;
         	
         case KeyEvent.VK_S: // rotate camera down around x/z axis 
-        	/*dir = -1;
-  			rotShift = dir*1;
-  			rotateZ(rotShift);
-  			rotateX(rotShift);
-  			*/
-  			dir = -1;
-  			rads = Math.toRadians(myRotZ); 
-  			dy = dir*Math.cos(rads)*speed;
-  			//dx = dir*Math.sin(rads)*speed;
-  			translateY((float) dy);
+        	if(e.isShiftDown()) {
+        		dir = -1;
+        		rotShift = dir*1;
+  				rotateZ(rotShift);
+  				rotateX(rotShift);
+        	}
+        	else {
+        		dir = -1;
+  				rads = Math.toRadians(myRotZ); 
+  				dy = dir*Math.cos(rads)*speed;
+  				//dx = dir*Math.sin(rads)*speed;
+  				translateY((float) dy);
+        	}
         	break;
         
         
@@ -249,19 +269,20 @@ public class Camera implements  KeyListener {
   			break;
   			
   		case KeyEvent.VK_LEFT:
-  			dir = 1;
+  			dir = 5;
   			rotShift = dir*1;
   			rotateY(rotShift);
         	break;
         	
   		case KeyEvent.VK_RIGHT:
-  			dir = -1;
+  			dir = -5;
   			rotShift = dir*1;
   			rotateY(rotShift);
         	break;
         }
-        
-        computeView();        
+        //Make sure we stay in bound
+
+    	computeView();
     }
     
     //How to debug control
