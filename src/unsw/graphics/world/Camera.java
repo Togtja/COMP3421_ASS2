@@ -203,15 +203,15 @@ public class Camera implements  KeyListener {
     	
         switch(e.getKeyCode()) {  
         case KeyEvent.VK_D:							// D key pressed, camera step right 
-        	dir = 1;
+        	dir = -1;
   			rads = Math.toRadians(myRotY); 
   			dz = dir*Math.cos(rads)*speed;
-  			dx = 1*0.3f; // dir*Math.sin(rads)*0.3f;
+  			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;
   			translateXZ((float) dx, (float) dz);
         	break;
         
         case KeyEvent.VK_A:							// A key pressed, step left 
-        	dir = -1;
+        	dir = 1;
   			rads = Math.toRadians(myRotY); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;

@@ -54,6 +54,7 @@ public class Person implements KeyListener {
     }
     
     public CoordFrame3D getfps() {
+    	//camera.setView(gl);
     	if(fpsMode) {
     		//trdPerson = camera.getView();
     		return camera.getView();
@@ -64,7 +65,9 @@ public class Person implements KeyListener {
 		double rads = Math.toRadians(camera.getRotY());
 		double dz = dir*Math.cos(rads)*speed;
 		double dx = dir*Math.sin(rads)*speed;
-    	return camera.getView().translate((float)dx, -1f, (float)dz);
+		double dzR = dir*Math.cos(rads);
+		double dxR = dir*Math.sin(rads);
+    	return camera.getView().translate((float)dx, -1f, (float)dz);//.rotateX((float)dzR).rotateZ((float)dxR);
     }
 
     @Override
@@ -118,5 +121,11 @@ public class Person implements KeyListener {
     }
     public boolean isFps() {
     	return fpsMode;
+    }
+    public Point3D getPosition() {
+    	return camera.getPosition();
+    }
+    public float getRot() {
+    	return camera.getRotY();
     }
 }
