@@ -1,6 +1,8 @@
 package unsw.graphics.world;
 
 
+import java.util.List;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
@@ -26,6 +28,28 @@ public class Camera implements  KeyListener {
     private float xPos;
     private float zPos;
     private float yPos;
+    
+    
+    // fix camera
+    private Vector4 clearColor;
+    private double near;
+    private double far; 
+    private double fov;
+    private int width;
+    private int height;
+    
+
+	private List<Integer> postProcShaders;
+	private int postProcTextures[];
+
+	private double time;
+	private boolean initShaders;
+
+	private int samplesDOF;
+	private float spreadDOF;
+	private float nearDOF;
+	private float farDOF;
+    // fix camera 
     
 
     public Camera() {
