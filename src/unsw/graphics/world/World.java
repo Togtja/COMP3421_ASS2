@@ -12,6 +12,7 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2ES2;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
 
@@ -66,73 +67,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
     
     // Rain particles
     private int MAXPARTICLES = 1000;
-    private int lastUsedParticle = 0;
-    private Particles ParticlesContainer;
-    private int findUnusedParticle() {
-    	Particles p = ParticlesContainer;
-    	for	(int i = lastUsedParticle; i < MAXPARTICLES; i++) {
-    		if (p.life[i] < 0) {
-    			lastUsedParticle = i;
-    			return i;
-    		}
-    	}
-    	for (int i = 0; i < lastUsedParticle; i++) {
-    		if (p.life[i] < 0) {
-    			lastUsedParticle = i;
-    			return i;
-    		}
-    	}
-    	return 0;
-    }
-    private void simulateParticles(GL3 gl, float delta, CoordFrame3D frame) {
-    	int newparticles = (int)(delta*10000.0);
-    	if (newparticles > (int)(0.016f*10000.0))
-    	    newparticles = (int)(0.016f*10000.0);
-    	Particles p = ParticlesContainer; // shortcut
-    	for(int i = 0; i < newparticles; i++) {
-    		int particleIndex = findUnusedParticle();
-    		p.life[particleIndex] = 30f;
-    		p.pos[particleIndex] = new Point3D(0,10,0);
-    		float spread = 1.5f;
-    		Vector3 mainDir = new Vector3(0, 10, 10);
-    		p.speed[particleIndex] = mainDir;
-    		
-    	}
-    	
-    	int ParticlesCount = 0;
-    	for(int i = 0; i < MAXPARTICLES; i++){
-    		
-    	    
-    	    if(p.life[i] > 0.0f){
-    	    	
-    	        // Decrease life
-    	    	
-    	        //p.life[i] -= delta;
-    	        if (p.life[i] > 0.0f){
-    	            // Simulate simple physics : gravity only, no collisions
-    	            p.speed[i] = new Vector3(0.0f,-9.81f * delta * 0.5f, 0.0f) ;
-    	            //p.pos[i] = new Point3D(0f, p.pos[i].getY() + p.speed[i].getY()* (float)delta, 0f);// * (float)delta;
-    	            Particles.g_particule_position_size_data.add(new Point4D(
-    	            		 p.pos[i].getX(), 
-    	            		 p.pos[i].getY(),
-    	            		 p.pos[i].getZ(),
-    	            		 p.size[i]));
-    	            Particles.g_particule_color_data.add(new Point4D(
-    	            		p.color.getBlue(),
-    	            		p.color.getGreen(),
-    	            		p.color.getRed(),
-    	            		p.color.getAlpha()));
-    	            p.draw(gl, ParticlesCount, frame);
-    	        }
-    	        else {
-    	            
-    	        }
-
-    	        ParticlesCount++;
-
-    	    }
-    	}
-    }
+    private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
     	//super("Assignment 2", 2000, 2000);
@@ -148,8 +83,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			e.printStackTrace();
 		}
         //Set default values to particles
-        
- 
+        for(int i = 0; i < MAXPARTICLES; i++) {
+        	rainDrop[i] = new Particle(new Point3D(0,10,0), 10);
+        }
 
     }
    
@@ -208,19 +144,14 @@ public class World extends Application3D implements KeyListener, MouseListener {
         
         setDayLighting(gl); // set the lighting properties for the shader 
         
-        //The particle system
-        ParticlesContainer = new Particles(gl, MAXPARTICLES);
-        ParticlesContainer.init(gl);
+        
 
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
-        long time = System.nanoTime();
-        float deltaTime = (float)((time - lastTime) / 1000000);
-        lastTime = time;
-        //simulateParticles(gl, deltaTime, person.getfps());
+       
         // for day / night mode 
         if (daylight == true) {
         	setDayLighting(gl);
@@ -269,6 +200,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
         }
         if(portal2.getPortal()) {
         	portal2.drawPortal(gl, person.getfps());
+        }
+        for (int i = 0; i < MAXPARTICLES; i++) {
+        	rainDrop[i].draw(gl, person.getfps());
+        	if(rainDrop[i].getPosition().getY() < 0) {
+        		rainDrop[i] = new Particle(new Point3D(0,6,0), 10);
+        	}
         }
         
         
