@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.List;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -39,7 +40,7 @@ import unsw.graphics.world.Camera;
  */
 public class World extends Application3D implements KeyListener, MouseListener {
     private Terrain terrain;
-    //private Camera camera;
+    private Camera camera;
     private Person person;
     private TriangleMesh terrainMesh;
     private Portal portal;
@@ -55,15 +56,27 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private boolean daylight;
     
     private CoordFrame3D drawFrame;
+    
+    
+    // fix camera
+    private static WorldObject root;
+    // fix camera 
 
     public World(Terrain terrain) {
     	super("Assignment 2", 2000, 2000);
     	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
         daylight = true;
+        root = new WorldObject();
+
+        //myTime = System.currentTimeMillis();
+        //camera = new Camera(root);
+        
+        
         try {
-			person = new Person(terrain);
-			portal = new Portal();
+			//person = new Person(terrain);
+        	person = new Person(terrain, root);
+        	portal = new Portal();
 			portal2 = new Portal();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -84,6 +97,14 @@ public class World extends Application3D implements KeyListener, MouseListener {
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain); 
+        
+        // set parent for each object in world 
+        terrain.setParent(root);
+        for (int i = 0; i < terrain.trees().size(); i++)  // set each tree parent to root 
+        	terrain.trees().get(i).setParent(root);
+        for (int i = 0; i < terrain.roads().size(); i++) // set each road parent to root 
+        	terrain.roads().get(i).setParent(root);
+        
         world.start();
     }
 
@@ -116,8 +137,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
         
 
         
-        //Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
-         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
+        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
+        //Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
 
         shader.use(gl);
         
@@ -140,11 +161,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
         } else {
         	setNightLighting(gl);
         }
-        
-        CoordFrame3D global = CoordFrame3D.identity();
-        
+                
        // set camera view frame 
-        person.getCam().computeView();
+        //person.getCam().computeView();
         
         // shifted drawing coord frame based on width and depth of terrain 
         
@@ -159,12 +178,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
-        terrainMesh.draw(gl, person.getfps());
+        terrainMesh.draw(gl);
         
         gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         
-        terrain.drawTrees(gl, person.getfps());
+        terrain.drawTrees(gl);
         
         //gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
@@ -172,10 +191,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
 
         //System.out.println(terrain.altitude( 1.5f, 3f));
-        terrain.drawRoads(gl, person.getfps());
+        terrain.drawRoads(gl);
         // person.TrdPerson(gl);
         if(!person.isFps()) {
-        	person.drawPerson(gl); //global); // person.getfps());
+        	person.drawPerson(gl);  // person.getfps());
         }
         if(portal.getPortal()) {
         	portal.drawPortal(gl, person.getfps());
@@ -254,8 +273,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	public void setDayLighting(GL3 gl) {
 		 // Set the lighting properties
         Shader.setViewMatrix(gl, person.getfps().getMatrix());
-        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-        Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+        //Shader.setVector3(gl, "sunlight", new Vector3(0, 0, 5));
+
+        Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+        //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
   		Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties

@@ -20,7 +20,7 @@ import unsw.graphics.geometry.TriangleMesh;
  *
  * @author malcolmr
  */
-public class Road {
+public class Road extends WorldObject {
 
     private List<Point2D> points;
     private float width;

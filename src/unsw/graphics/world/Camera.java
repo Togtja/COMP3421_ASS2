@@ -6,6 +6,8 @@ import java.util.List;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
+
+import unsw.graphics.CoordFrame2D;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Shader;
@@ -14,20 +16,20 @@ import unsw.graphics.Vector4;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.scene.MathUtil;
 
-public class Camera implements  KeyListener {
+public class Camera extends WorldObject implements  KeyListener {
     // the local transformation
     private CoordFrame3D viewFrame;
     private Terrain terrain;
-    private Point3D myTranslation;
+/*    private Point3D myTranslation;
     private float myRotX;
     private float myRotY; 
-    private float myRotZ;
+    private float myRotZ;*/
     
-    private float myScale;
+ /*   private float myScale;*/
     private float myAspectRatio;
-    private float xPos;
+   /* private float xPos;
     private float zPos;
-    private float yPos;
+    private float yPos;*/
     
     
     // fix camera
@@ -52,81 +54,73 @@ public class Camera implements  KeyListener {
     // fix camera 
     
 
-    public Camera() {
+    public Camera(WorldObject parent) {
+    	super(parent);
+    	
     	viewFrame = CoordFrame3D.identity();
-    	myRotX = 0;
-    	myRotY = 180;
-    	myRotZ = 0;
-        myScale = 1;
-        myTranslation = new Point3D(0,0,0);
+    	setRotY(180);
         myAspectRatio = 1;
-        xPos = 0; yPos = 0; zPos = 0;
+       // xPos = 0; yPos = 0; zPos = 0;
     }
     
-    public Camera(Terrain t) {
+    public Camera(Terrain t, WorldObject parent) {
+    	super(parent);
+    	
         viewFrame = CoordFrame3D.identity();
-        myRotX = 0;
-    	myRotY = 230;
-    	myRotZ = 0;
-        myScale = 1;
-        xPos = 0; yPos = 1; zPos = 0; 
-        myTranslation = new Point3D(xPos,yPos,zPos);
+    
+        setRotY(230);
+       // xPos = 0; yPos = 1; zPos = 0; 
+        setPosition(new Point3D(0,1,0));
+        
         myAspectRatio = 1;
         terrain = t;
-        
-    }
 
-    public void setRotX(float rotation) {
-        myRotX = MathUtil.normaliseAngle(rotation);
-    }
-    public float getRotX() {
-        return myRotX;
-    }
-    public void setRotY(float rotation) {
-        myRotY = MathUtil.normaliseAngle(rotation);
-    }
-    public float getRotY() {
-        return myRotY;
-    }
-    public void setRotZ(float rotation) {
-        myRotZ = MathUtil.normaliseAngle(rotation);
-    }
-    public float getRotZ() {
-        return myRotZ;
     }
     
-    public float getScale() {
-        return myScale;
-    }
-    
-    public void setScale(float scale) {
-        myScale = scale;
-    }
-    
-    public Point3D getPosition() {
-        return myTranslation;
+    public void setView(GL3 gl) {
+        // TODO compute a view transform to account for the cameras aspect ratio
+        
+    	// compute view transform for dimensions of screen;
+    	CoordFrame3D viewFrame = CoordFrame3D.identity()
+    			.scale(1/getAspectRatio(), 1, 1)
+    	// TODO apply further transformations to account for the camera's global position, 
+    	// rotation and scale
+                .scale(1/getScale(), 1/getScale(), 1/getScale())
+                //.rotateY(-1*getRotation())
+                .rotateY(-1*getRotY()).rotateX(-1*getRotX()).rotateZ(-1*getRotZ())
+                .translate(-1*getPosition().getX(), -1*getPosition().getY(), -1*getPosition().getZ());
+    	
+        // TODO set the view matrix to the computed transform
+        Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
     
     public void setPosition(float x, float z) {
     	float y = terrain.altitude(x, z);
         setPosition(new Point3D(x,y,z));
     }    
+    
+    
     //Used to set height for an avatar infront of you
     public void setHeight(float yOff, float avatar) {
-    	float y = terrain.altitude(myTranslation.getX(), myTranslation.getZ());
-        setPosition(new Point3D(myTranslation.getX(),y + yOff, myTranslation.getZ()));
+    	float y = terrain.altitude(getPosition().getX(),getPosition().getZ() ); // float y = terrain.altitude(myTranslation.getX(), myTranslation.getZ());
+        setPosition(new Point3D(getPosition().getX(), y+ yOff, getPosition().getZ()));  // setPosition(new Point3D(myTranslation.getX(),y + yOff, myTranslation.getZ()));
         //computeView();
     }
-    //
-    public void setHeight(float x, float yOff, float z, boolean avatar) {
 
-    	float y = terrain.altitude(x, z);
-        setPosition(new Point3D(myTranslation.getX() ,y + yOff, myTranslation.getZ()));
-        computeView();
-    }
     
-    public void setPosition(Point3D p) {
-        myTranslation = p;
+    public void setHeight(float x, float yOff, float z, boolean avatar) {
+    	int w = terrain.getWidth();
+    	int d = terrain.getDepth();
+    	float y = 0;
+    	
+    	if (x >= w || x < 0 || z >= d || z < 0) { // index out of bounds 
+
+         } else {
+         	y = terrain.altitude(x, z);
+         }
+    	setPosition(getPosition().getX(), y+yOff, getPosition().getZ());
+        //setPosition(new Point3D(myTranslation.getX() ,y + yOff, myTranslation.getZ()));
+        computeView();
     }
     
     public void setTerrain(Terrain terrain) {
@@ -141,59 +135,27 @@ public class Camera implements  KeyListener {
         return viewFrame;
     }
     
-    public void setView(CoordFrame3D frame) { 
+    /*public void setView(CoordFrame3D frame) { 
         viewFrame = frame;     
     }
     
     public void setView(GL3 gl) {
         computeView(); // compute a view transform to account for the cameras aspect ratio and further transformations for camera
         Shader.setViewMatrix(gl, viewFrame.getMatrix()); // set the view matrix to the computed transform
-    }
+    }*/
     
     public float getAspectRatio() {
         return myAspectRatio;
     }
     
     public void translateXZ(float dx, float dz) {
-    	float dy;
-    	//float yPrev = yPos;
-        xPos += dx;
-        zPos += dz;
-/*
-        System.out.println("x position: " + xPos);
-        System.out.println("z position: " + zPos);
-    	if (checkTerrainBounds(-xPos, -zPos) == true) {
-            yPos = terrain.altitude(-xPos, -zPos);
-            System.out.println("y position: " + yPos);
-    		dy = yPos - yPrev; 
-    	} else { */
-    	dy = 0;
-    	//}
-    	myTranslation = myTranslation.translate(dx, dy, dz);
+    	setPosition(getPosition().translate(dx, 0, dz)); // myTranslation = myTranslation.translate(dx, dy, dz);
     }
     
     public void translateY(float dy) {
-    	yPos += dy;
-    	myTranslation = myTranslation.translate(0, dy, 0);
+    	setPosition(getPosition().translate(0,dy,0)); // myTranslation = myTranslation.translate(0, dy, 0);
     }
-    
-    public void scale(float factor) {
-        myScale *= factor;
-    }
-    
-    public void rotateX(float angle) {
-        myRotX += angle;
-        myRotX = MathUtil.normaliseAngle(myRotX);
-    }
-    public void rotateY(float angle) {
-        myRotY += angle;
-        myRotY = MathUtil.normaliseAngle(myRotY);
-    }
-    public void rotateZ(float angle) {
-        myRotZ += angle;
-        myRotZ = MathUtil.normaliseAngle(myRotZ);
-    }
-    
+
     public void computeView() {
     	viewFrame = CoordFrame3D.identity()
     			.scale(1/getAspectRatio(), 1, 1)     	// compute view transform for dimensions of screen
@@ -228,7 +190,7 @@ public class Camera implements  KeyListener {
         switch(e.getKeyCode()) {  
         case KeyEvent.VK_D:							// D key pressed, camera step right 
         	dir = -1;
-  			rads = Math.toRadians(myRotY); 
+  			rads = Math.toRadians(getRotY()); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;
   			translateXZ((float) dx, (float) dz);
@@ -236,7 +198,7 @@ public class Camera implements  KeyListener {
         
         case KeyEvent.VK_A:							// A key pressed, step left 
         	dir = 1;
-  			rads = Math.toRadians(myRotY); 
+  			rads = Math.toRadians(getRotY()); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*0.3f; // dir*Math.sin(rads)*0.3f;
   			translateXZ((float) dx, (float) dz);
@@ -251,7 +213,7 @@ public class Camera implements  KeyListener {
         	}
         	else {
         		dir = 1;
-        		rads = Math.toRadians(myRotZ); 
+        		rads = Math.toRadians(getRotZ()); 
         		dy = dir*Math.cos(rads)*speed;
         		//dx = dir*Math.sin(rads)*speed;
         		translateY((float) dy);
@@ -267,7 +229,7 @@ public class Camera implements  KeyListener {
         	}
         	else {
         		dir = -1;
-  				rads = Math.toRadians(myRotZ); 
+  				rads = Math.toRadians(getRotZ()); 
   				dy = dir*Math.cos(rads)*speed;
   				//dx = dir*Math.sin(rads)*speed;
   				translateY((float) dy);
@@ -278,7 +240,7 @@ public class Camera implements  KeyListener {
         //Delivery keys
   		case KeyEvent.VK_UP:						// Up arrow pressed, camera moves forward 
   			dir = -1;
-  			rads = Math.toRadians(myRotY); 
+  			rads = Math.toRadians(getRotY()); 
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*Math.sin(rads)*speed;
   			translateXZ((float) dx, (float) dz);
@@ -286,7 +248,7 @@ public class Camera implements  KeyListener {
   			
   		case KeyEvent.VK_DOWN:						// Down arrow pressed, camera moves backwards
   			dir = 1;
-  			rads = Math.toRadians(myRotY);
+  			rads = Math.toRadians(getRotY());
   			dz = dir*Math.cos(rads)*speed;
   			dx = dir*Math.sin(rads)*speed;
   			translateXZ((float) dx, (float) dz);

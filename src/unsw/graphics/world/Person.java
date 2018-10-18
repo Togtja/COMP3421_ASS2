@@ -15,8 +15,8 @@ import unsw.graphics.Texture;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
-public class Person implements KeyListener {
-    private Point3D position; //The model position
+public class Person extends WorldObject implements KeyListener {
+    //private Point3D position; //The model position
     private Camera camera;
     private boolean fpsMode = true;
     private boolean tp = false; //if person just teleporten
@@ -30,8 +30,21 @@ public class Person implements KeyListener {
     private Terrain terrain;
     private CoordFrame3D trdPerson;
     
+    // for now 
+    private Point3D position;
+    
     public Person(Terrain t) throws IOException {
     	camera = new Camera(t);//Camera(); // Creates a camera
+    	//setPosition(new Point3D(2.3f, -1f, 2f)); 
+    	position = new Point3D(2.3f, -1f, 2f); //DO NOT CHANGE UNLESS AVATAR IS NOT THERE
+    	terrain = t;
+        model = new TriangleMesh("res/models/bunny.ply");      
+    }
+    
+    public Person(Terrain t, WorldObject root) throws IOException {
+    	//camera = new Camera(t);//Camera(); // Creates a camera
+    	camera = new Camera(t, root);
+    	//setPosition(new Point3D(2.3f, -1f, 2f)); 
     	position = new Point3D(2.3f, -1f, 2f); //DO NOT CHANGE UNLESS AVATAR IS NOT THERE
     	terrain = t;
         model = new TriangleMesh("res/models/bunny.ply");      
@@ -51,13 +64,13 @@ public class Person implements KeyListener {
     public void drawPerson(GL3 gl) {
 
         Shader.setPenColor(gl, Color.BLUE);
-    	model.draw(gl, trdPerson.translate(position).scale(5f, 5f, 5f).rotateY(50));
+    	model.draw(gl, trdPerson.translate(position).scale(5f, 5f, 5f).rotateY(50)); //getPosition()).scale(5f, 5f, 5f).rotateY(50));
    
     }
     
     public CoordFrame3D getfps() {
     	//camera.setView(gl);
-    	if(fpsMode) {
+    	if(fpsMode) { 
     		//trdPerson = camera.getView();
     		return camera.getView();
     	}
@@ -90,7 +103,7 @@ public class Person implements KeyListener {
        			z += dir*Math.cos(rads);
        			x += dir*Math.sin(rads);
          	}
-      		camera.setHeight(x, upSet,z, !fpsMode);
+      		//camera.setHeight(x, upSet,z, !fpsMode);
       		  
       	  }
     	}

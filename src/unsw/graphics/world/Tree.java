@@ -17,10 +17,10 @@ import unsw.graphics.geometry.TriangleMesh;
  *
  * @author malcolmr
  */
-public class Tree {
+public class Tree extends WorldObject {
 
     private Point3D position;
-    private CoordFrame3D frame;
+    //private CoordFrame3D frame;
     
     // from model viewer 
     private static final boolean USE_LIGHTING = true;
@@ -30,23 +30,26 @@ public class Tree {
     private Texture texture;
 
     public Tree(float x, float y, float z) throws IOException {
-        position = new Point3D(x, y, z);
+    	setPosition(new Point3D(x,y,z)); 
         tree = new TriangleMesh("res/models/tree.ply");
-        frame = CoordFrame3D.identity();        
+        setScale(0.1f);
+    }
+    
+    public Tree(WorldObject parent) throws IOException {
+    	super(parent);
+        tree = new TriangleMesh("res/models/tree.ply");
     }
     
     public void init(GL3 gl) {
     	tree.init(gl);
     }
-    
-    public Point3D getPosition() {
-        return position;
-    }
-    
-    public void drawTree(GL3 gl, CoordFrame3D frame) {
+
+    public void drawTree(GL3 gl) {//, CoordFrame3D frame) {
     	//tree.init(gl); 
     	Shader.setPenColor(gl, Color.BLUE);
-    	frame = frame.translate(position).scale(0.1f, 0.1f, 0.1f);
+    	CoordFrame3D frame = CoordFrame3D.identity()
+    			.translate(getPosition())
+    			.scale(getScale(), getScale(), getScale());
     	tree.draw(gl, frame);
     }
 }

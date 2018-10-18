@@ -2,9 +2,11 @@ package unsw.graphics.scene;
 
 import java.awt.Color;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.Shader;
 import unsw.graphics.geometry.Polygon2D;
 
 /**
@@ -98,9 +100,29 @@ public class PolygonalSceneObject extends SceneObject {
      */
     @Override
     public void drawSelf(GL3 gl, CoordFrame2D frame) {
-
         // TODO: Write this method
-
+    	if(getFillColor() != null) { 	// fill color is non-null
+    		// Set the pen color of the shader 
+    		Shader.setPenColor(gl, getFillColor());
+                	
+    		// draw polygon
+    		myPolygon.draw(gl, frame);	
+    	}
+    	
+    	if (getLineColor() != null) {	// line color is non-null
+    		// set the pen color of the shader 
+    		Shader.setPenColor(gl, getLineColor());
+    		// draw outline
+    		myPolygon.drawOutline(gl, frame);
+    	}
+    }
+    
+    public Polygon2D getPolygon() {
+    	return myPolygon;
+    }
+    
+    public void setPolygon(Polygon2D polygon) {
+    	myPolygon = polygon;
     }
 
 
