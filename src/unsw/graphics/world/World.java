@@ -9,7 +9,8 @@ import java.util.Arrays;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
-
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
@@ -22,6 +23,7 @@ import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
+import unsw.graphics.examples.sailing.objects.Mouse;
 import unsw.graphics.world.Person;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -35,13 +37,13 @@ import unsw.graphics.world.Camera;
  *
  * @author malcolmr
  */
-public class World extends Application3D implements KeyListener {
-
+public class World extends Application3D implements KeyListener, MouseListener {
     private Terrain terrain;
     //private Camera camera;
     private Person person;
     private TriangleMesh terrainMesh;
-
+    private Portal portal;
+    private Portal portal2;
     private int verticesName;
     private int texCoordsName;
     private int indicesName;
@@ -56,13 +58,15 @@ public class World extends Application3D implements KeyListener {
     	super("Assignment 2", 2000, 2000);
     	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
-        
         try {
 			person = new Person(terrain);
+			portal = new Portal();
+			portal2 = new Portal();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
 
     }
    
@@ -87,8 +91,12 @@ public class World extends Application3D implements KeyListener {
 		getWindow().addKeyListener(person);
 		getWindow().addKeyListener(person.getCam());
 		getWindow().addKeyListener(this);
+		getWindow().addMouseListener(this);
         
-		person.init(gl);		
+		person.init(gl);
+		
+		portal.init(gl);
+		portal2.init(gl);
 		
         terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
 		terrainMesh = terrain.getTriMesh();
@@ -103,9 +111,11 @@ public class World extends Application3D implements KeyListener {
         texCoordsName = names[1];
         indicesName = names[2];
         
+
         
         //Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
          Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
+
         shader.use(gl);
         
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
@@ -148,11 +158,18 @@ public class World extends Application3D implements KeyListener {
         //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         Shader.setPenColor(gl, Color.WHITE);
 
+
         //System.out.println(terrain.altitude( 1.5f, 3f));
         terrain.drawRoads(gl, person.getfps());
         // person.TrdPerson(gl);
         if(!person.isFps()) {
         	person.drawPerson(gl); //global); // person.getfps());
+        }
+        if(portal.getPortal()) {
+        	portal.drawPortal(gl, person.getfps());
+        }
+        if(portal2.getPortal()) {
+        	portal2.drawPortal(gl, person.getfps());
         }
 
     }
@@ -205,5 +222,98 @@ public class World extends Application3D implements KeyListener {
         Shader.setFloat(gl, "phongExp", 16f);
 	}
 
+
+	public CoordFrame3D getDrawFrame() {
+		return drawFrame;
+	}
+
+
+/**/ 
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		if(arg0.getButton() == MouseEvent.BUTTON1 && !portal.getPortal()) {
+			float dir = -5;
+  			double rads = Math.toRadians(person.getRot()); 
+  			float dz = (float) (dir*Math.cos(rads));
+  			float dx = (float) (dir*Math.sin(rads));
+			portal.placePortal(person.getPosition().getX() + dx,
+					person.getPosition().getY(),
+					person.getPosition().getZ() + dz);
+			portal.setPortal(true);
+			System.out.println("Mouse 1 pressed");
+		}
+		else if (arg0.getButton() == MouseEvent.BUTTON1) {
+			portal.setPortal(false);
+		}
+		if(arg0.getButton() == MouseEvent.BUTTON3 && !portal2.getPortal()) {
+			float dir = -5;
+  			double rads = Math.toRadians(person.getRot()); 
+  			float dz = (float) (dir*Math.cos(rads));
+  			float dx = (float) (dir*Math.sin(rads));
+			portal2.placePortal(person.getPosition().getX() + dx,
+					person.getPosition().getY(),
+					person.getPosition().getZ() + dz);
+			portal2.setPortal(true);
+			System.out.println("Mouse 3 pressed");
+		}
+		else if (arg0.getButton() == MouseEvent.BUTTON3) {
+			portal2.setPortal(false);
+		}
+	}
+
+
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	}
+
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		//
+		
+	}
+
+
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseWheelMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
