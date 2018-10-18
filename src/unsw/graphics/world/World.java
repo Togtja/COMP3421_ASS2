@@ -53,8 +53,8 @@ public class World extends Application3D implements KeyListener {
     private CoordFrame3D drawFrame;
 
     public World(Terrain terrain) {
-    	//super("Assignment 2", 2000, 2000);
-    	super("Assignment 2", 600, 600);
+    	super("Assignment 2", 2000, 2000);
+    	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
         
         try {
@@ -104,41 +104,45 @@ public class World extends Application3D implements KeyListener {
         indicesName = names[2];
         
         
-        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
-        // Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
+        //Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); //"shaders/fragment_tex_phong.glsl");
+         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/fragment_tex_phong.glsl"); //"shaders/fragment_tex_phong.glsl");
         shader.use(gl);
         
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
-        road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
+        //road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
+        road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
         
+        
+        CoordFrame3D global = CoordFrame3D.identity();
+        
+       // set camera view frame 
+        person.getCam().computeView();
+        
         // shifted drawing coord frame based on width and depth of terrain 
-        //setDrawFrame();
         
         Shader.setInt(gl,"tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
+        gl.glBindTexture(GL.GL_TEXTURE_2D, grass.getId());
 
-        Shader.setPenColor(gl, Color.PINK);
+        Shader.setPenColor(gl, Color.GREEN);
                 
         setLighting(gl); // set the lighting properties for the shader 
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
         terrainMesh.draw(gl, person.getfps());
-        //terrainMesh.draw(gl, drawFrame);
         
         gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         
         terrain.drawTrees(gl, person.getfps());
-        //terrain.drawTrees(gl, drawFrame);
         
         //gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
         //gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
@@ -146,10 +150,9 @@ public class World extends Application3D implements KeyListener {
 
         //System.out.println(terrain.altitude( 1.5f, 3f));
         terrain.drawRoads(gl, person.getfps());
-        //terrain.drawRoads(gl, drawFrame);
         // person.TrdPerson(gl);
         if(!person.isFps()) {
-        	person.drawPerson(gl);
+        	person.drawPerson(gl); //global); // person.getfps());
         }
 
     }
@@ -201,14 +204,6 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
 	}
-	
-	public void setDrawFrame() {
-		float dx = (terrain.getWidth()-1)/2;
-		float dz = (terrain.getDepth()-1)/2;
-		drawFrame = person.getfps().translate(new Point3D(dx, 0, dz));
-	}
-	
-	public CoordFrame3D getDrawFrame() {
-		return drawFrame;
-	}
+
+
 }

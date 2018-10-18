@@ -51,6 +51,7 @@ public class Person implements KeyListener {
 
         Shader.setPenColor(gl, Color.BLUE);
     	model.draw(gl, trdPerson.translate(position).scale(5f, 5f, 5f).rotateY(50));
+   
     }
     
     public CoordFrame3D getfps() {
@@ -58,6 +59,7 @@ public class Person implements KeyListener {
     		//trdPerson = camera.getView();
     		return camera.getView();
     	}
+    	
     	//Else
     	float dir = -5f;
     	float speed = 0.3f;
@@ -81,7 +83,7 @@ public class Person implements KeyListener {
            	if(!fpsMode) {
        			float dir = -1; //float speed = 0.3f; 
        			double rads = Math.toRadians(camera.getRotY()); 
-       			x += dir*Math.cos(rads);
+       			z += dir*Math.cos(rads);
        			x += dir*Math.sin(rads);
          	}
       		camera.setHeight(x, upSet,z, !fpsMode);

@@ -28,6 +28,8 @@ public class Road {
     private TriangleMesh triMesh;
     float altitude;
     
+    private int debug;
+    
     // buffers for drawing 
     private Point3DBuffer vertexBuffer;
     private Point2DBuffer texCoordBuffer;
@@ -43,12 +45,14 @@ public class Road {
         this.width = width;
         this.points = spine;
         this.altitude = 0;
+        this.debug = 0; 
     }
     
     public Road(float width, List<Point2D> spine, float altitude) {
         this.width = width;
         this.points = spine;
         this.altitude = altitude;
+        this.debug = 0;
     }
 
 
@@ -88,12 +92,10 @@ public class Road {
      * @return
      */
     public Point2D point(float t) {
-        /*int i = (int)Math.floor(t);
+        int i = (int)Math.floor(t);
         t = t - i;
         
-        i *= 3;*/
-        int i = 0;
-        
+        i *= 3;
         Point2D p0 = points.get(i++);
         Point2D p1 = points.get(i++);
         Point2D p2 = points.get(i++);
@@ -178,45 +180,35 @@ public class Road {
     public void makeRoad(GL3 gl) { //, int width, int depth) {    	
     	int size = 0, count = 0;
         float w  = this.width/2;
-        float step = 0.05f;
+        float step = 0.01f;
         float alt = altitude + 0.001f;
         
         List<Point2D> curve = new ArrayList<Point2D>(); // use points on curve and width of road to get points on second curve 
-        //curve = getPointsOnCurve();
-        for (float t = 0; t < 1; t+=step) {
-    		curve.add(point(t));
-    	}
+        List<Vector3> normals = new ArrayList<Vector3>();
+        getPointsOnCurve(curve, normals, step);        
         
         List<Point3D> curve1 = new ArrayList<Point3D>();
         List<Point3D> curve2 = new ArrayList<Point3D>();
-/*        
-        for (float t = 0; t < 1.00; t+=0.01) {
-    		//curve.add(point(t));
-        	Vector3 normal = normal(tangent(t)).normalize();
-        	
-        	curve1.add(new Point3D(-w * normal.getX() + point(t).getX(), alt, -w*normal.getY() + point(t).getY()));
-        	curve2.add(new Point3D(w * normal.getX() + point(t).getX(), alt, w*normal.getY() + point(t).getY()));
-        	
-        	// debug 
-        	System.out.println("x1: " + curve1.get(count).getX());
-        	System.out.println("z1: " + curve1.get(count).getZ());
-        	System.out.println(" ");
-        	System.out.println("x2: " + curve2.get(count).getX());
-        	System.out.println("z2: " + curve2.get(count).getZ());
-        	System.out.println(" ");
-
-        	
-        	count++;
-    	}*/
-        
+        //setPoints(step, curve1, curve2);
         size = curve.size();
-        	
+             	
         for (int i = 0; i < size; i++) {
-        	curve1.add(new Point3D(curve.get(i).getX(), alt, curve.get(i).getY()-w));
-        	curve2.add(new Point3D(curve.get(i).getX(), alt, curve.get(i).getY()+w));
+        	Point2D pt = curve.get(i);
+        	Vector3 normal = normals.get(i);
+        	
+        	curve1.add(new Point3D(pt.getX() - w * normal.getX(), alt, pt.getY() - w * normal.getY()));
+        	curve2.add(new Point3D(pt.getX() + w * normal.getX(), alt, pt.getY() + w * normal.getY()));
         }
         
-        
+        //debug
+        if (debug == 0) {
+        	for (int i = 0; i < curve1.size(); i++) {
+        		System.out.println("x= " + curve1.get(i).getX() + " y= " +curve1.get(i).getX());
+        	}
+        	System.out.println("Loop completed");
+        }
+    	debug = 1;
+
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         List<Point2D> texCoords = new ArrayList<Point2D>();
@@ -228,61 +220,64 @@ public class Road {
         setTexCoordBuffer(texCoords);
         
         triMesh = new TriangleMesh(vertices, indices, true, texCoords);	// initialize triangle mesh for terrain
-        //triMesh = new TriangleMesh(vertices, true, texCoords);
-    	triMesh.init(gl);
+    	//triMesh = new TriangleMesh(vertices, true, texCoords);
+        triMesh.init(gl);
     }
     
     
     
     private void drawTriangles(List<Point3D> vertices, List<Integer> indices, List<Point2D> texCoords, int size, List<Point3D> curve1, List<Point3D> curve2) {
     	int count = 0;
-        for (int i = 0; i < size - 1; i++) {
+        for (int i = 0; i < size -1 ; i++) {
 			// generate vertices points 
 			Point3D A = curve1.get(i); 		// new Point3D(i, altitudes[i][k], k);
 			Point3D B = curve1.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k], k);
 			Point3D C = curve2.get(i); 		// new Point3D(i, altitudes[i][k+1], k+1);
 			Point3D D = curve2.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k+1], k+1);
 			
-			// add vertices points to vertices list 
-			vertices.add(A); // 0
-			vertices.add(D); // 1
-			vertices.add(C); // 2
-			vertices.add(B); // 3 
-			
+			// add vertices list
+			vertices.add(D); // D = 0
+			vertices.add(C); // C = 1
+			vertices.add(A); // A = 2
+			vertices.add(B); // B = 3
+
+			// add tex coords to list 
+			texCoords.add(new Point2D(D.getX(),D.getZ()));
+			texCoords.add(new Point2D(B.getX(),B.getZ()));
+			texCoords.add(new Point2D(A.getX(),A.getZ()));
+			texCoords.add(new Point2D(C.getX(),C.getZ()));
+						
 			// add indices to indices list 
-			indices.add(count*4);			// add A 
-			indices.add(count*4 + 1);		// add C
-			indices.add(count*4 + 2);		// add D
-			indices.add(count*4);			// add A 
-			indices.add(count*4 + 3);		// add B 
-			indices.add(count*4 + 2);		// add C
+			indices.add(count*4);			// 0
+			indices.add(count*4 + 2);		// 2
+			indices.add(count*4 + 1);		// 1
+			
+			indices.add(count*4);			// 0
+ 			indices.add(count*4 + 3);		// 3
+			indices.add(count*4 + 2);		// 2
 
-			// add tex coords to tex coords list 
-			texCoords.add(new Point2D(0,0));
-			texCoords.add(new Point2D(0,1));
-			texCoords.add(new Point2D(1,1));
-			texCoords.add(new Point2D(1,0));
-
-			//numTriangles = numTriangles + 2; 
 			count++;
-        	
-       		/*texCoords.add(new Point2D(curve1.get(i).getX(), curve1.get(i).getY())); 
-       		vertices.add(curve1.get(i));
-       		texCoords.add(new Point2D(curve2.get(i).getX(), curve2.get(i).getY()));
-       		vertices.add(curve2.get(i));*/
-		}
+        }
     }
     
-   public List<Point2D> getPointsOnCurve(){
-	   // use points calculate bezier curve 
-	   List<Point2D> ptsOnCurve = new ArrayList<Point2D>();
-	   // increment by a value to store a point from the bezier curve at t
-    	for (float t = 0; t < 1.05; t+=0.05) {
-    		ptsOnCurve.add(point(t));
+    public void getPointsOnCurve(List<Point2D> curve, List<Vector3> normals, float step){
+    	// use points calculate bezier curve 
+    	// increment by a value to store a point from the bezier curve at t
+    	/*int size = points.size();
+    	
+    	
+    	int i = (int)Math.floor(t);
+        t = t - i;
+        
+        i *= 3;*/
+    	
+    	for (float t = 0; t <= 1; t+=step) {
+    		curve.add(point(t));
+    		Vector3 normal = normal(tangent(t)).normalize();
+        	normals.add(normal);
     	}
-    	return ptsOnCurve;
-   }
-   
+    }
+    
    /**
     * Function to set the texture coord buffer 
     */
@@ -372,8 +367,11 @@ public class Road {
 	   return altitude;
    }
    
-   public Vector3 tangent(float t) {	   
-	   int i = 0; 
+   public Vector3 tangent(float t) {	   	   
+	   int i = (int)Math.floor(t);
+       t = t - i;
+       
+       i *= 3;
 	   
 	   Point2D p0 = points.get(i++);
        Point2D p1 = points.get(i++);
@@ -418,4 +416,5 @@ public class Road {
 	   
 	   return new Point2D(p1.getX(), p1.getY());
    }
+   
 }
