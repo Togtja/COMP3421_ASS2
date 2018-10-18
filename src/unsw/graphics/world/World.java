@@ -13,6 +13,7 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2ES2;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
 
@@ -69,7 +70,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private int MAXPARTICLES = 1000;
     private int lastUsedParticle = 0;
     private Particles ParticlesContainer;
-
+    private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
     	super("Assignment 2", 2000, 2000);
@@ -91,8 +92,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			e.printStackTrace();
 		}
         //Set default values to particles
-        
- 
+        for(int i = 0; i < MAXPARTICLES; i++) {
+        	rainDrop[i] = new Particle(new Point3D(0,10,0), 10);
+        }
 
     }
    
@@ -155,7 +157,6 @@ public class World extends Application3D implements KeyListener, MouseListener {
         //The particle system
         ParticlesContainer = new Particles(gl, MAXPARTICLES);
         ParticlesContainer.init(gl);
-
 	}
 	
 	@Override
@@ -167,6 +168,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
         float deltaTime = (float)((time - lastTime) / 1000000);
         lastTime = time;
         //simulateParticles(gl, deltaTime, person.getfps());
+       
         // for day / night mode 
         if (day == true) { setDayLighting(gl); } 
         else { setNightLighting(gl); }
@@ -197,6 +199,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
         }
         if(portal2.getPortal()) {
         	portal2.drawPortal(gl);
+        }
+        for (int i = 0; i < MAXPARTICLES; i++) {
+        	rainDrop[i].draw(gl, person.getfps());
+        	if(rainDrop[i].getPosition().getY() < 0) {
+        		rainDrop[i] = new Particle(new Point3D(0,6,0), 10);
+        	}
         }
         
         

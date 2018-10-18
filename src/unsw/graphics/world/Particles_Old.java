@@ -16,7 +16,7 @@ import unsw.graphics.Vector4;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.Point4D;
 
-public class Particles {
+public class Particles_Old {
 	private int[] billboard_vertex_buffer;
 	private int[] particles_position_buffer;
 	private int[] particles_color_buffer;
@@ -31,6 +31,7 @@ public class Particles {
 	public static List<Point4D> g_particule_position_size_data;
 	public static List<Point4D> g_particule_color_data;
 	public Particles(GL3 gl, int MAX) {
+		MAXPARTICLES = MAX;
 		pos = new Point3D[MAX];
 		speed = new Vector3[MAX];
 		color = new Color(0,0,1,0.7f);
@@ -52,24 +53,12 @@ public class Particles {
 		points.add(new Point3D(0.5f, -0.5f, 0.0f));
 		points.add(new Point3D(-0.5f,  0.5f, 0.0f));
 		points.add(new Point3D(0.5f,  0.5f, 0.0f));
-		
-		
-        
-		MAXPARTICLES = MAX;
-		
-		
-	}
-	public void init(GL3 gl) {
-
-	}
-	public void  draw(GL3 gl, int ParticlesCount, CoordFrame3D frame) {
-		
 		Point3DBuffer buffer = new Point3DBuffer(points);
 		billboard_vertex_buffer = new int[1];
 		//GLuint billboard_vertex_buffer;
 		gl.glGenBuffers(1, billboard_vertex_buffer, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, billboard_vertex_buffer[0]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, 3 * Float.BYTES, buffer.getBuffer(), GL.GL_STATIC_DRAW);
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, 3 * points.size() * Float.BYTES, buffer.getBuffer(), GL.GL_STATIC_DRAW);
 
 		// The VBO containing the positions and sizes of the particles
 		//GLuint particles_position_buffer;
@@ -85,6 +74,18 @@ public class Particles {
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, particles_color_buffer[0]);
 		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 		gl.glBufferData(GL.GL_ARRAY_BUFFER, MAXPARTICLES * 4 * 1, null, GL.GL_STATIC_DRAW);
+		
+        
+		
+		
+		
+	}
+	public void init(GL3 gl) {
+
+	}
+	public void  draw(GL3 gl, int ParticlesCount, CoordFrame3D frame) {
+		
+		
 		// 1rst attribute buffer : vertices
 		gl.glEnableVertexAttribArray(0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, billboard_vertex_buffer[0]);
@@ -126,11 +127,11 @@ public class Particles {
 		Point4DBuffer buffer_pos = new Point4DBuffer(g_particule_position_size_data);
 		Point4DBuffer buffer_col = new Point4DBuffer(g_particule_color_data);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, particles_position_buffer[0]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, MAXPARTICLES * 4 * Float.BYTES, null, GL.GL_STATIC_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, MAXPARTICLES * 4 * Float.BYTES,null , GL.GL_STATIC_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
 		gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, ParticlesCount * Float.BYTES * 4, buffer_pos.getBuffer());
 
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, particles_color_buffer[0]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, MAXPARTICLES * 4 * 1, null, GL.GL_STATIC_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, MAXPARTICLES * 4 * 1, buffer_col.getBuffer(), GL.GL_STATIC_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
 		gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, ParticlesCount * Float.BYTES * 4, buffer_col.getBuffer());
 		
 		Shader.setModelMatrix(gl, frame.getMatrix());
@@ -145,3 +146,79 @@ public class Particles {
 		gl.glDeleteBuffers(1, billboard_vertex_buffer,0);
 	}
 }
+/* IN THE WORLD.JAVA
+private int lastUsedParticle = 0;
+private Particles ParticlesContainer;
+private int findUnusedParticle() {
+	Particles p = ParticlesContainer;
+	for	(int i = lastUsedParticle; i < MAXPARTICLES; i++) {
+		if (p.life[i] < 0) {
+			lastUsedParticle = i;
+			return i;
+		}
+	}
+	for (int i = 0; i < lastUsedParticle; i++) {
+		if (p.life[i] < 0) {
+			lastUsedParticle = i;
+			return i;
+		}
+	}
+	return 0;
+}
+private void simulateParticles(GL3 gl, float delta, CoordFrame3D frame) {
+	int newparticles = (int)(delta*10000.0);
+	if (newparticles > (int)(0.016f*10000.0))
+	    newparticles = (int)(0.016f*10000.0);
+	Particles p = ParticlesContainer; // shortcut
+	for(int i = 0; i < newparticles; i++) {
+		int particleIndex = findUnusedParticle();
+		p.life[particleIndex] = 30f;
+		p.pos[particleIndex] = new Point3D(0,10,0);
+		float spread = 1.5f;
+		Vector3 mainDir = new Vector3(0, 10, 10);
+		p.speed[particleIndex] = mainDir;
+		
+	}
+	
+	int ParticlesCount = 0;
+	for(int i = 0; i < MAXPARTICLES; i++){
+		
+	    
+	    if(p.life[i] > 0.0f){
+	    	
+	        // Decrease life
+	    	
+	        //p.life[i] -= delta;
+	        if (p.life[i] > 0.0f){
+	            // Simulate simple physics : gravity only, no collisions
+	            p.speed[i] = new Vector3(0.0f,-9.81f * delta * 0.5f, 0.0f) ;
+	            //p.pos[i] = new Point3D(0f, p.pos[i].getY() + p.speed[i].getY()* (float)delta, 0f);// * (float)delta;
+	            Particles.g_particule_position_size_data.add(new Point4D(
+	            		 p.pos[i].getX(), 
+	            		 p.pos[i].getY(),
+	            		 p.pos[i].getZ(),
+	            		 p.size[i]));
+	            Particles.g_particule_color_data.add(new Point4D(
+	            		p.color.getBlue(),
+	            		p.color.getGreen(),
+	            		p.color.getRed(),
+	            		p.color.getAlpha()));
+	            p.draw(gl, ParticlesCount, frame);
+	        }
+	        else {
+	            
+	        }
+
+	        ParticlesCount++;
+
+	    }
+	}
+}
+
+INIT IN WORDL
+ParticlesContainer = new Particles(gl, MAXPARTICLES);
+ParticlesContainer.init(gl);
+
+DISPLAY IN WORLD
+simulateParticles(gl, deltaTime, person.getfps());
+*/
