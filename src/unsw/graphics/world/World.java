@@ -42,8 +42,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
     //private Camera camera;
     private Person person;
     private TriangleMesh terrainMesh;
+    
     private Portal portal;
     private Portal portal2;
+    private float portXTresh = 2f;
+    private float portZTresh = 0.5f;
+    
     private int verticesName;
     private int texCoordsName;
     private int indicesName;
@@ -55,8 +59,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private CoordFrame3D drawFrame;
 
     public World(Terrain terrain) {
-    	super("Assignment 2", 2000, 2000);
-    	//super("Assignment 2", 600, 600);
+    	//super("Assignment 2", 2000, 2000);
+    	super("Assignment 2", 600, 600);
         this.terrain = terrain;
         try {
 			person = new Person(terrain);
@@ -194,25 +198,37 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	// implement methods to implement KeyListener interface
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (person.getTeleportet() &&
-				(!portal.onPortal(person.getPosition())
-				&& !portal2.onPortal(person.getPosition()))) {
+		/*if (person.getTeleportet() &&
+				(portal.onPortal(person.getPosition()) != 0
+				&& portal2.onPortal(person.getPosition()) != 0)) {
 			person.setTeleportet(false);
-		}
-		
+		}*/
+		//If hit hits the first cube of the portal
 		if (portal.getPortal() && portal2.getPortal()
-				&& !person.getTeleportet()
-				&& portal.onPortal(person.getPosition())) {
+				//&& !person.getTeleportet()
+				&& portal.onPortal(person.getPosition(), portXTresh, portZTresh) == 1) {
 				
-				person.setPosition(portal2.getPosition());
-				person.setTeleportet(true);
+				person.setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
+				//person.setTeleportet(true);
+		}
+		else if (portal.getPortal() && portal2.getPortal()
+				//&& !person.getTeleportet()
+				&& portal.onPortal(person.getPosition(), portXTresh, portZTresh) == 2) {
+			person.setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
 		}
 		if (portal.getPortal() && portal2.getPortal()
-				&& !person.getTeleportet()
-				&& portal2.onPortal(person.getPosition())) {
+				//&& !person.getTeleportet()
+				&& portal2.onPortal(person.getPosition(), portXTresh, portZTresh) == 1) {
 				
-				person.setPosition(portal.getPosition());
-				person.setTeleportet(true);
+				person.setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
+				//person.setTeleportet(true);
+		}
+		else if (portal.getPortal() && portal2.getPortal()
+				//&& !person.getTeleportet()
+				&& portal2.onPortal(person.getPosition(), portXTresh, portZTresh) == 2) {
+				
+				person.setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
+				//person.setTeleportet(true);
 		}
 	}
 
