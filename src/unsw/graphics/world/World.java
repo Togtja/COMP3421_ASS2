@@ -217,6 +217,26 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	}
         	break;
 		}
+		if (person.getTeleportet() &&
+				(!portal.onPortal(person.getPosition())
+				&& !portal2.onPortal(person.getPosition()))) {
+			person.setTeleportet(false);
+		}
+		
+		if (portal.getPortal() && portal2.getPortal()
+				&& !person.getTeleportet()
+				&& portal.onPortal(person.getPosition())) {
+				
+				person.setPosition(portal2.getPosition());
+				person.setTeleportet(true);
+		}
+		if (portal.getPortal() && portal2.getPortal()
+				&& !person.getTeleportet()
+				&& portal2.onPortal(person.getPosition())) {
+				
+				person.setPosition(portal.getPosition());
+				person.setTeleportet(true);
+		}
 	}
 
 	@Override
@@ -233,8 +253,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
      */
 	public void setDayLighting(GL3 gl) {
 		 // Set the lighting properties
-        Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-        //Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+        Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
   		Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties
@@ -246,8 +267,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	
 	public void setNightLighting(GL3 gl) {
 		 // Set the lighting properties
-       Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-       //Shader.setViewMatrix(gl, person.getfps().getMatrix());
+	    Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+
+       Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
  		Shader.setColor(gl, "lightIntensity", Color.WHITE);
        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
        // Set the material properties
@@ -294,6 +317,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		else if (arg0.getButton() == MouseEvent.BUTTON3) {
 			portal2.setPortal(false);
 		}
+
 	}
 
 
