@@ -47,7 +47,6 @@ public class Tree {
     	//tree.init(gl); 
     	Shader.setPenColor(gl, Color.BLUE);
     	frame = frame.translate(position).scale(0.1f, 0.1f, 0.1f);
-    			//.translate(0,4.7f,0); // set local coord frame of tree to position tree stump more accurately with the terrain 
     	tree.draw(gl, frame);
     }
 }

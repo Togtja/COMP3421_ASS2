@@ -26,7 +26,8 @@ in vec2 texCoordFrag;
 void main()
 {
 	// Compute the s, v and r vectors
-	vec3 s = normalize(view_matrix*vec4(sunlight,0) - viewPosition).xyz; // convert sunlight vector from camera coords to view coords using view matrix
+    vec3 s = normalize(view_matrix*vec4(sunlight,0)).xyz;
+	//vec3 s = normalize(vec4(sunlight,1)-viewPosition).xyz;
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
 
@@ -42,7 +43,7 @@ void main()
 
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
-    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag);// + vec4(specular, 1);
 }
 
 
