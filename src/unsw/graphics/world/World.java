@@ -28,6 +28,7 @@ import unsw.graphics.examples.sailing.objects.Mouse;
 import unsw.graphics.world.Person;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.Point4D;
 import unsw.graphics.geometry.TriangleMesh;
 import unsw.graphics.world.Camera;
 
@@ -39,6 +40,7 @@ import unsw.graphics.world.Camera;
  * @author malcolmr
  */
 public class World extends Application3D implements KeyListener, MouseListener {
+    private static WorldObject root;
     private Terrain terrain;
     private Camera camera;
     private Person person;
@@ -57,15 +59,18 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Texture trees;
     private Texture road; 
     
-    private boolean day;
-    
-    private CoordFrame3D drawFrame;
-    
-    
-    // fix camera
-    private static WorldObject root;
-    // fix camera 
+    private boolean day;    
 
+    //deltaTime
+    long lastTime =  System.nanoTime() * 1000000;
+    
+    
+    // Rain particles
+    private int MAXPARTICLES = 1000;
+    private int lastUsedParticle = 0;
+    private Particles ParticlesContainer;
+
+    
     public World(Terrain terrain) {
     	super("Assignment 2", 2000, 2000);
     	//super("Assignment 2", 600, 600);
@@ -85,7 +90,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        //Set default values to particles
         
+ 
 
     }
    
@@ -144,6 +151,11 @@ public class World extends Application3D implements KeyListener, MouseListener {
         road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
         
         setDayLighting(gl); // set the lighting properties for the shader 
+ 
+        //The particle system
+        ParticlesContainer = new Particles(gl, MAXPARTICLES);
+        ParticlesContainer.init(gl);
+
 	}
 	
 	@Override
@@ -151,11 +163,13 @@ public class World extends Application3D implements KeyListener, MouseListener {
         super.display(gl);
         
         // for setting shaders for day / night mode 
-        if (day == true) {
-        	setDayLighting(gl);
-        } else {
-        	setNightLighting(gl);
-        }
+        long time = System.nanoTime();
+        float deltaTime = (float)((time - lastTime) / 1000000);
+        lastTime = time;
+        //simulateParticles(gl, deltaTime, person.getfps());
+        // for day / night mode 
+        if (day == true) { setDayLighting(gl); } 
+        else { setNightLighting(gl); }
 
         Shader.setInt(gl,"tex", 0);
         
@@ -184,7 +198,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
         if(portal2.getPortal()) {
         	portal2.drawPortal(gl);
         }
-
+        
+        
+        
     }
 
 	@Override
@@ -209,8 +225,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {  
         case KeyEvent.VK_N:							// N key pressed, switch to night mode 
-        	if (day == true) { day = false; 
-        	} else { day = true; }
+        	if (day == true) { day = false; } 
+        	else { day = true; }
         	break;
 		}
 		
@@ -309,10 +325,6 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	}
 
 
-	public CoordFrame3D getDrawFrame() {
-		return drawFrame;
-	}
-
 
 /**/ 
 	@Override
@@ -348,7 +360,71 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
 	}
 
+    private int findUnusedParticle() {
+    	Particles p = ParticlesContainer;
+    	for	(int i = lastUsedParticle; i < MAXPARTICLES; i++) {
+    		if (p.life[i] < 0) {
+    			lastUsedParticle = i;
+    			return i;
+    		}
+    	}
+    	for (int i = 0; i < lastUsedParticle; i++) {
+    		if (p.life[i] < 0) {
+    			lastUsedParticle = i;
+    			return i;
+    		}
+    	}
+    	return 0;
+    }
+    private void simulateParticles(GL3 gl, float delta, CoordFrame3D frame) {
+    	int newparticles = (int)(delta*10000.0);
+    	if (newparticles > (int)(0.016f*10000.0))
+    	    newparticles = (int)(0.016f*10000.0);
+    	Particles p = ParticlesContainer; // shortcut
+    	for(int i = 0; i < newparticles; i++) {
+    		int particleIndex = findUnusedParticle();
+    		p.life[particleIndex] = 30f;
+    		p.pos[particleIndex] = new Point3D(0,10,0);
+    		float spread = 1.5f;
+    		Vector3 mainDir = new Vector3(0, 10, 10);
+    		p.speed[particleIndex] = mainDir;
+    		
+    	}
+    	
+    	int ParticlesCount = 0;
+    	for(int i = 0; i < MAXPARTICLES; i++){
+    		
+    	    
+    	    if(p.life[i] > 0.0f){
+    	    	
+    	        // Decrease life
+    	    	
+    	        //p.life[i] -= delta;
+    	        if (p.life[i] > 0.0f){
+    	            // Simulate simple physics : gravity only, no collisions
+    	            p.speed[i] = new Vector3(0.0f,-9.81f * delta * 0.5f, 0.0f) ;
+    	            //p.pos[i] = new Point3D(0f, p.pos[i].getY() + p.speed[i].getY()* (float)delta, 0f);// * (float)delta;
+    	            Particles.g_particule_position_size_data.add(new Point4D(
+    	            		 p.pos[i].getX(), 
+    	            		 p.pos[i].getY(),
+    	            		 p.pos[i].getZ(),
+    	            		 p.size[i]));
+    	            Particles.g_particule_color_data.add(new Point4D(
+    	            		p.color.getBlue(),
+    	            		p.color.getGreen(),
+    	            		p.color.getRed(),
+    	            		p.color.getAlpha()));
+    	            p.draw(gl, ParticlesCount, frame);
+    	        }
+    	        else {
+    	            
+    	        }
 
+    	        ParticlesCount++;
+
+    	    }
+    	}
+    }
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
@@ -401,6 +477,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	public void mouseWheelMoved(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	void code(GL3 gl, int MAX){
+
 	}
 
 }

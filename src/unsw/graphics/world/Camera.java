@@ -20,61 +20,24 @@ public class Camera extends WorldObject implements  KeyListener {
     // the local transformation
     private CoordFrame3D viewFrame;
     private Terrain terrain;
-/*    private Point3D myTranslation;
-    private float myRotX;
-    private float myRotY; 
-    private float myRotZ;*/
-    
- /*   private float myScale;*/
     private float myAspectRatio;
-   /* private float xPos;
-    private float zPos;
-    private float yPos;*/
-    
-    
-    // fix camera
-    private Vector4 clearColor;
-    private double near;
-    private double far; 
-    private double fov;
-    private int width;
-    private int height;
-    
 
-	private List<Integer> postProcShaders;
-	private int postProcTextures[];
 
-	private double time;
-	private boolean initShaders;
-
-	private int samplesDOF;
-	private float spreadDOF;
-	private float nearDOF;
-	private float farDOF;
-    // fix camera 
-    
 
     public Camera(WorldObject parent) {
     	super(parent);
-    	
     	viewFrame = CoordFrame3D.identity();
     	setRotY(180);
         myAspectRatio = 1;
-       // xPos = 0; yPos = 0; zPos = 0;
     }
     
     public Camera(Terrain t, WorldObject parent) {
     	super(parent);
-    	
         viewFrame = CoordFrame3D.identity();
-    
         setRotY(230);
-       // xPos = 0; yPos = 1; zPos = 0; 
         setPosition(new Point3D(0,1,0));
-        
         myAspectRatio = 1;
         terrain = t;
-
     }
     
     public void setView(GL3 gl) {
@@ -102,8 +65,8 @@ public class Camera extends WorldObject implements  KeyListener {
     
     //Used to set height for an avatar infront of you
     public void setHeight(float yOff, float avatar) {
-    	float y = terrain.altitude(getPosition().getX(),getPosition().getZ() ); // float y = terrain.altitude(myTranslation.getX(), myTranslation.getZ());
-        setPosition(new Point3D(getPosition().getX(), y+ yOff, getPosition().getZ()));  // setPosition(new Point3D(myTranslation.getX(),y + yOff, myTranslation.getZ()));
+    	float y = terrain.altitude(getPosition().getX(),getPosition().getZ() );
+        setPosition(new Point3D(getPosition().getX(), y+ yOff, getPosition().getZ()));  
         //computeView();
     }
 
@@ -113,13 +76,10 @@ public class Camera extends WorldObject implements  KeyListener {
     	int d = terrain.getDepth();
     	float y = 0;
     	
-    	if (x >= w || x < 0 || z >= d || z < 0) { // index out of bounds 
-
-         } else {
-         	y = terrain.altitude(x, z);
-         }
+    	if (x >= w || x < 0 || z >= d || z < 0) { } // index out of bounds 
+    	else { y = terrain.altitude(x, z); }
+    	
     	setPosition(getPosition().getX(), y+yOff, getPosition().getZ());
-        //setPosition(new Point3D(myTranslation.getX() ,y + yOff, myTranslation.getZ()));
         computeView();
     }
     
@@ -135,25 +95,16 @@ public class Camera extends WorldObject implements  KeyListener {
         return viewFrame;
     }
     
-    /*public void setView(CoordFrame3D frame) { 
-        viewFrame = frame;     
-    }
-    
-    public void setView(GL3 gl) {
-        computeView(); // compute a view transform to account for the cameras aspect ratio and further transformations for camera
-        Shader.setViewMatrix(gl, viewFrame.getMatrix()); // set the view matrix to the computed transform
-    }*/
-    
     public float getAspectRatio() {
         return myAspectRatio;
     }
     
     public void translateXZ(float dx, float dz) {
-    	setPosition(getPosition().translate(dx, 0, dz)); // myTranslation = myTranslation.translate(dx, dy, dz);
+    	setPosition(getPosition().translate(dx, 0, dz)); 
     }
     
     public void translateY(float dy) {
-    	setPosition(getPosition().translate(0,dy,0)); // myTranslation = myTranslation.translate(0, dy, 0);
+    	setPosition(getPosition().translate(0,dy,0)); 
     }
 
     public void computeView() {
