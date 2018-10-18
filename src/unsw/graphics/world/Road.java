@@ -189,26 +189,15 @@ public class Road extends WorldObject {
         
         List<Point3D> curve1 = new ArrayList<Point3D>();
         List<Point3D> curve2 = new ArrayList<Point3D>();
-        //setPoints(step, curve1, curve2);
         size = curve.size();
              	
         for (int i = 0; i < size; i++) {
         	Point2D pt = curve.get(i);
-        	Vector3 normal = normals.get(i);
-        	
+        	Vector3 normal = normals.get(i);        	
         	curve1.add(new Point3D(pt.getX() - w * normal.getX(), alt, pt.getY() - w * normal.getY()));
         	curve2.add(new Point3D(pt.getX() + w * normal.getX(), alt, pt.getY() + w * normal.getY()));
         }
         
-        //debug
-        if (debug == 0) {
-        	for (int i = 0; i < curve1.size(); i++) {
-        		System.out.println("x= " + curve1.get(i).getX() + " y= " +curve1.get(i).getX());
-        	}
-        	System.out.println("Loop completed");
-        }
-    	debug = 1;
-
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         List<Point2D> texCoords = new ArrayList<Point2D>();
@@ -220,7 +209,6 @@ public class Road extends WorldObject {
         setTexCoordBuffer(texCoords);
         
         triMesh = new TriangleMesh(vertices, indices, true, texCoords);	// initialize triangle mesh for terrain
-    	//triMesh = new TriangleMesh(vertices, true, texCoords);
         triMesh.init(gl);
     }
     
@@ -387,7 +375,6 @@ public class Road extends WorldObject {
        Point2D p10 = new Point2D(p1.getX() - p0.getX(), p1.getY() - p0.getY());
        Point2D p21 = new Point2D(p2.getX() - p1.getX(), p2.getY() - p1.getY());
        Point2D p32 = new Point2D(p3.getX() - p2.getX(), p3.getY() - p2.getY());
-	   
 	   
 	   float x = 3*(b2(0, t) * p10.getX() + b2(1, t) * p21.getX() + b2(2, t) * p32.getX());   
        float y = 3*(b2(0, t) * p10.getY() + b2(1, t) * p21.getY() + b2(2, t) * p32.getY());      

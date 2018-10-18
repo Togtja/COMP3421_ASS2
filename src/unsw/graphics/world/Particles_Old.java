@@ -30,7 +30,7 @@ public class Particles_Old {
 	private List<Point3D> points;
 	public static List<Point4D> g_particule_position_size_data;
 	public static List<Point4D> g_particule_color_data;
-	public Particles(GL3 gl, int MAX) {
+	public Particles_Old(GL3 gl, int MAX) {
 		MAXPARTICLES = MAX;
 		pos = new Point3D[MAX];
 		speed = new Vector3[MAX];

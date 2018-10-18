@@ -62,14 +62,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     
     private boolean day;    
 
-    //deltaTime
-    long lastTime =  System.nanoTime() * 1000000;
-    
-    
     // Rain particles
     private int MAXPARTICLES = 1000;
-    private int lastUsedParticle = 0;
-    private Particles ParticlesContainer;
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
@@ -77,13 +71,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
     	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
         day = true;
-        root = new WorldObject();
-
-        //myTime = System.currentTimeMillis();
-        
+        root = new WorldObject();        
         
         try {
-			//person = new Person(terrain);
         	person = new Person(terrain, root);
         	portal = new Portal(root);
 			portal2 = new Portal(root);
@@ -93,7 +83,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		}
         //Set default values to particles
         for(int i = 0; i < MAXPARTICLES; i++) {
-        	rainDrop[i] = new Particle(new Point3D(0,10,0), 10);
+        	rainDrop[i] = new Particle(new Point3D(0,6,0), 10);
         }
 
     }
@@ -139,6 +129,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
         terrainMesh.init(gl);
         
         person.setTerrain(terrain);
+	    
        
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
@@ -146,32 +137,29 @@ public class World extends Application3D implements KeyListener, MouseListener {
         verticesName = names[0];
         texCoordsName = names[1];
         indicesName = names[2];
+        
+        Shader day = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); 
+	    day.use(gl);
 
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
         //road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
         road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
         
-        setDayLighting(gl); // set the lighting properties for the shader 
- 
-        //The particle system
-        ParticlesContainer = new Particles(gl, MAXPARTICLES);
-        ParticlesContainer.init(gl);
+        setDayLighting(gl); // set the lighting properties for the shader
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
         
-        // for setting shaders for day / night mode 
-        long time = System.nanoTime();
-        float deltaTime = (float)((time - lastTime) / 1000000);
-        lastTime = time;
-        //simulateParticles(gl, deltaTime, person.getfps());
-       
         // for day / night mode 
-        if (day == true) { setDayLighting(gl); } 
-        else { setNightLighting(gl); }
+        if (day == true) {
+        	setDayLighting(gl);
+        } else {
+        	setNightLighting(gl);
+        }
+        
 
         Shader.setInt(gl,"tex", 0);
         
@@ -201,14 +189,11 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	portal2.drawPortal(gl);
         }
         for (int i = 0; i < MAXPARTICLES; i++) {
-        	rainDrop[i].draw(gl, person.getfps());
+        	rainDrop[i].draw(gl);//, person.getfps());
         	if(rainDrop[i].getPosition().getY() < 0) {
         		rainDrop[i] = new Particle(new Point3D(0,6,0), 10);
         	}
         }
-        
-        
-        
     }
 
 	@Override
@@ -299,13 +284,13 @@ public class World extends Application3D implements KeyListener, MouseListener {
      * @param shader
      */
 	public void setDayLighting(GL3 gl) {
-		Shader day = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); 
-	    day.use(gl);
-	    
+		
 		 // Set the lighting properties
         Shader.setViewMatrix(gl, person.getfps().getMatrix());
         Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-  		Shader.setColor(gl, "lightIntensity", Color.WHITE);
+	   // Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+
+        Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
@@ -315,8 +300,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	}
 	
 	public void setNightLighting(GL3 gl) {
-		Shader night = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/torchLight.glsl"); 
-	    night.use(gl);
+		///Shader night = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/torchLight.glsl"); 
+	    //night.use(gl);
 		
 		 // Set the lighting properties
 	    Shader.setViewMatrix(gl, person.getfps().getMatrix());
@@ -331,6 +316,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
  		Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
  		Shader.setFloat(gl, "phongExp", 16f);
 	}
+
+
 
 
 
@@ -368,71 +355,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
 	}
 
-    private int findUnusedParticle() {
-    	Particles p = ParticlesContainer;
-    	for	(int i = lastUsedParticle; i < MAXPARTICLES; i++) {
-    		if (p.life[i] < 0) {
-    			lastUsedParticle = i;
-    			return i;
-    		}
-    	}
-    	for (int i = 0; i < lastUsedParticle; i++) {
-    		if (p.life[i] < 0) {
-    			lastUsedParticle = i;
-    			return i;
-    		}
-    	}
-    	return 0;
-    }
-    private void simulateParticles(GL3 gl, float delta, CoordFrame3D frame) {
-    	int newparticles = (int)(delta*10000.0);
-    	if (newparticles > (int)(0.016f*10000.0))
-    	    newparticles = (int)(0.016f*10000.0);
-    	Particles p = ParticlesContainer; // shortcut
-    	for(int i = 0; i < newparticles; i++) {
-    		int particleIndex = findUnusedParticle();
-    		p.life[particleIndex] = 30f;
-    		p.pos[particleIndex] = new Point3D(0,10,0);
-    		float spread = 1.5f;
-    		Vector3 mainDir = new Vector3(0, 10, 10);
-    		p.speed[particleIndex] = mainDir;
-    		
-    	}
-    	
-    	int ParticlesCount = 0;
-    	for(int i = 0; i < MAXPARTICLES; i++){
-    		
-    	    
-    	    if(p.life[i] > 0.0f){
-    	    	
-    	        // Decrease life
-    	    	
-    	        //p.life[i] -= delta;
-    	        if (p.life[i] > 0.0f){
-    	            // Simulate simple physics : gravity only, no collisions
-    	            p.speed[i] = new Vector3(0.0f,-9.81f * delta * 0.5f, 0.0f) ;
-    	            //p.pos[i] = new Point3D(0f, p.pos[i].getY() + p.speed[i].getY()* (float)delta, 0f);// * (float)delta;
-    	            Particles.g_particule_position_size_data.add(new Point4D(
-    	            		 p.pos[i].getX(), 
-    	            		 p.pos[i].getY(),
-    	            		 p.pos[i].getZ(),
-    	            		 p.size[i]));
-    	            Particles.g_particule_color_data.add(new Point4D(
-    	            		p.color.getBlue(),
-    	            		p.color.getGreen(),
-    	            		p.color.getRed(),
-    	            		p.color.getAlpha()));
-    	            p.draw(gl, ParticlesCount, frame);
-    	        }
-    	        else {
-    	            
-    	        }
+    
+   
 
-    	        ParticlesCount++;
-
-    	    }
-    	}
-    }
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
