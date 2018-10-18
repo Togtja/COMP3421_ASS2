@@ -260,6 +260,9 @@ public class Road {
         }
     }
     
+    /**
+     * Function to get points on curve and normal for each point on curve 
+     */
     public void getPointsOnCurve(List<Point2D> curve, List<Vector3> normals, float step){
     	// use points calculate bezier curve 
     	// increment by a value to store a point from the bezier curve at t
@@ -329,44 +332,47 @@ public class Road {
    		return indicesBuffer;
    }
    
+   /**
+    * Function to set triangle mesh 
+    */
    public void setTriMesh(TriangleMesh mesh) {
  		triMesh = mesh;
    } 
    
+   /**
+    * Function to get triangle mesh 
+    */
    public TriangleMesh getTriMesh() {
   		return triMesh;
    }
    
-   public List<Point2D> checkPoints(int width, int depth, List<Point2D> pts) {
-	   int size = pts.size();
-	   Point2D p;
-	   float x, y; 
-	   List<Point2D> pts2 = new ArrayList<Point2D>(); 
-	   // check points in list based on max and min for array bounds 
-	   for (int i = 0; i < size; i++) {
-		   x = pts.get(i).getX();
-		   y = pts.get(i).getY();
-		   if (x >= width) { x = width - 1; } // check x is greater than array width
-		   else if (x < 0) { x = 0; } // check x is less than 0
-		   if (y >= depth) { y = depth - 1; } // check y is greater than array depth
-		   else if (y < 0) { y = 0; } // check y is less than 0
-		   pts2.add(new Point2D(x,y)); // add updated point 
-	   }
-	   return pts2;
-   }
    
+   /**
+    * Function to get first control point  
+    */
    public Point2D getFirstControlPoint() {
 	   return points.get(0);
    }
    
+   /**
+    * Function to get set road altitude 
+    */
    public void setAltitude(float altitude) {
 	   this.altitude = altitude;
    }
    
+   /**
+    * Function to get road altitude 
+    */
    public float getAltitude() {
 	   return altitude;
    }
    
+   /**
+    * Function to get tangent of curve at t 
+    * 
+    * @param t 
+    */
    public Vector3 tangent(float t) {	   	   
 	   int i = (int)Math.floor(t);
        t = t - i;
@@ -391,30 +397,14 @@ public class Road {
 	   return k.normalize(); 
    }
    
+   /**
+    * Function to calculate normal of a vector k (tangent vector)
+    * 
+    * @param k 
+    */
    public Vector3 normal(Vector3 k) {
 	   return new Vector3(-1*k.getY(), k.getX(), 0); // i = (-k2, k1, 0)
    }
    
-   public Vector3 j(Vector3 k, Vector3 i) {	   
-	   return k.cross(i); // j = k x i
-   }
-   
-   public Matrix3 frenetFrame(Vector3 i, Vector3 j, Vector3 k) {
-	   float[] values = {i.getX(), i.getY(), i.getZ(), j.getX(), j.getY(), j.getZ(), k.getX(), k.getY(), k.getZ()};
-	   return new Matrix3(values);
-   }
-   
-   public Point2D frenetTranslation(float t) {
-	   Vector3 p0 = new Vector3(0, 0.1f, 0);
-	   
-	   Vector3 k = tangent(t);
-	   Vector3 i = normal(k);
-	   Vector3 j = j(k,i);
-	   Matrix3 frenetFrame = frenetFrame(i,j,k);
-	   
-	   Vector3 p1 = frenetFrame.multiply(p0);
-	   
-	   return new Point2D(p1.getX(), p1.getY());
-   }
    
 }

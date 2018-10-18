@@ -56,12 +56,15 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Texture trees;
     private Texture road; 
     
+    private boolean daylight;
+    
     private CoordFrame3D drawFrame;
 
     public World(Terrain terrain) {
     	//super("Assignment 2", 2000, 2000);
     	super("Assignment 2", 600, 600);
         this.terrain = terrain;
+        daylight = true;
         try {
 			person = new Person(terrain);
 			portal = new Portal();
@@ -126,12 +129,21 @@ public class World extends Application3D implements KeyListener, MouseListener {
         trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
         //road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
         road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
+        
+        setDayLighting(gl); // set the lighting properties for the shader 
+
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
         
+        // for day / night mode 
+        if (daylight == true) {
+        	setDayLighting(gl);
+        } else {
+        	setNightLighting(gl);
+        }
         
         CoordFrame3D global = CoordFrame3D.identity();
         
@@ -147,7 +159,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
         Shader.setPenColor(gl, Color.GREEN);
                 
-        setLighting(gl); // set the lighting properties for the shader 
+        //setDayLighting(gl); // set the lighting properties for the shader 
 
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK,GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         
@@ -201,6 +213,20 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		/*if (person.getTeleportet() &&
 				(portal.onPortal(person.getPosition()) != 0
 				&& portal2.onPortal(person.getPosition()) != 0)) {
+		//person.keyPressed(e); // do what camera would do 
+		switch(e.getKeyCode()) {  
+        case KeyEvent.VK_N: // switch to/from night time mode 
+        	if (daylight == true) { // switch to night mode
+        		daylight = false;
+        		//setDayLighting(gl);
+        	} else { // switch to day mode 
+        		daylight = true; 
+        	}
+        	break;
+		}
+		if (person.getTeleportet() &&
+				(!portal.onPortal(person.getPosition())
+				&& !portal2.onPortal(person.getPosition()))) {
 			person.setTeleportet(false);
 		}*/
 		//If hit hits the first cube of the portal
@@ -244,10 +270,11 @@ public class World extends Application3D implements KeyListener, MouseListener {
      * @param gl
      * @param shader
      */
-	public void setLighting(GL3 gl) {
+	public void setDayLighting(GL3 gl) {
 		 // Set the lighting properties
-        Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-        //Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+        Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
   		Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties
@@ -255,6 +282,21 @@ public class World extends Application3D implements KeyListener, MouseListener {
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
+	}
+	
+	public void setNightLighting(GL3 gl) {
+		 // Set the lighting properties
+	    Shader.setViewMatrix(gl, person.getfps().getMatrix());
+        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
+
+       Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+ 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
+       Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+       // Set the material properties
+       Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+       Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+       Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+       Shader.setFloat(gl, "phongExp", 16f);
 	}
 
 
