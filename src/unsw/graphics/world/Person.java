@@ -16,9 +16,10 @@ import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
 public class Person implements KeyListener {
-    private Point3D position;
+    private Point3D position; //The model position
     private Camera camera;
     private boolean fpsMode = true;
+    private boolean tp = false; //if person just teleporten
     
     // from model viewer 
     private static final boolean USE_LIGHTING = true;
@@ -125,7 +126,16 @@ public class Person implements KeyListener {
     public Point3D getPosition() {
     	return camera.getPosition();
     }
+    public void setPosition(Point3D p) {
+    	camera.setPosition(p);
+    }
     public float getRot() {
     	return camera.getRotY();
+    }
+    public boolean getTeleportet() {
+    	return tp;
+    }
+    public void setTeleportet(boolean tf) {
+    	tp =tf;
     }
 }

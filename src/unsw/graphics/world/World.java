@@ -185,7 +185,26 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	// implement methods to implement KeyListener interface
 	@Override
 	public void keyPressed(KeyEvent e) {
-		//person.keyPressed(e); // do what camera would do 
+		if (person.getTeleportet() &&
+				(!portal.onPortal(person.getPosition())
+				&& !portal2.onPortal(person.getPosition()))) {
+			person.setTeleportet(false);
+		}
+		
+		if (portal.getPortal() && portal2.getPortal()
+				&& !person.getTeleportet()
+				&& portal.onPortal(person.getPosition())) {
+				
+				person.setPosition(portal2.getPosition());
+				person.setTeleportet(true);
+		}
+		if (portal.getPortal() && portal2.getPortal()
+				&& !person.getTeleportet()
+				&& portal2.onPortal(person.getPosition())) {
+				
+				person.setPosition(portal.getPosition());
+				person.setTeleportet(true);
+		}
 	}
 
 	@Override
@@ -254,6 +273,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		else if (arg0.getButton() == MouseEvent.BUTTON3) {
 			portal2.setPortal(false);
 		}
+
 	}
 
 

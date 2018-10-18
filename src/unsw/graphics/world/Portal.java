@@ -20,7 +20,7 @@ public class Portal {
     	model.init(gl);
     }
 	public void drawPortal(GL3 gl, CoordFrame3D view) {
-		model.draw(gl, view.translate(position));
+		model.draw(gl, view.translate(position).scale(0.5f, 0.5f, 0.5f));
 	}
 	public boolean getPortal() {
 		return isPortal;
@@ -33,5 +33,18 @@ public class Portal {
 	}
 	public void placePortal(Point3D p) {
 		position = p;
+	}
+	public Point3D getPosition() {
+		return position;
+	}
+	public boolean onPortal(Point3D p) {
+		float tresh = 1.5f;
+		if (position.getX() + tresh > p.getX() && position.getX() - tresh < p.getX() 
+			&& position.getY() + tresh > p.getY() && position.getY() - tresh < p.getY()
+			&& position.getZ() + tresh > p.getZ() && position.getZ() - tresh < p.getZ()) {
+			
+			return true;
+		}
+		return false;
 	}
 }
