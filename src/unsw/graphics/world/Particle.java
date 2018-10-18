@@ -49,11 +49,11 @@ public class Particle extends WorldObject {
 		
 		setScale(rand(2.5f, 0)/10);
 	}
-	public void draw(GL3 gl) { //, CoordFrame3D frame) {
+	public void draw(GL3 gl, float bill) { //, CoordFrame3D frame) {
 		Shader.setPenColor(gl, color);
 		CoordFrame3D frame = CoordFrame3D.identity()
 				.translate(getPosition())
-				.scale(getScale(), getScale(), getScale());
+				.scale(getScale(), getScale(), getScale()).rotateY(bill);
 		drop.draw(gl, frame);
 		setPosition(new Point3D(getPosition().getX()+speed.getX(),
 						  getPosition().getY()+speed.getY(),

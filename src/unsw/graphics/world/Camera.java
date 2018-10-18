@@ -27,7 +27,7 @@ public class Camera extends WorldObject implements  KeyListener {
     public Camera(WorldObject parent) {
     	super(parent);
     	viewFrame = CoordFrame3D.identity();
-    	setRotY(180);
+    	//setRotY(180);
         myAspectRatio = 1;
     }
     

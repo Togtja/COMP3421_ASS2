@@ -43,7 +43,7 @@ import unsw.graphics.world.Camera;
 public class World extends Application3D implements KeyListener, MouseListener {
     private static WorldObject root;
     private Terrain terrain;
-    private Camera camera;
+    //private Camera camera;
     private Person person;
     private TriangleMesh terrainMesh;
     
@@ -67,8 +67,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
-    	super("Assignment 2", 2000, 2000);
-    	//super("Assignment 2", 600, 600);
+    	//super("Assignment 2", 2000, 2000);
+    	super("Assignment 2", 600, 600);
         this.terrain = terrain;
         day = true;
         root = new WorldObject();        
@@ -189,8 +189,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	portal2.drawPortal(gl);
         }
         for (int i = 0; i < MAXPARTICLES; i++) {
-        	rainDrop[i].draw(gl);//, person.getfps());
+        	rainDrop[i].draw(gl, person.getCam().getRotY()-180);
         	if(rainDrop[i].getPosition().getY() < 0) {
+        		rainDrop[i].destroy();
         		rainDrop[i] = new Particle(new Point3D(0,6,0), 10);
         	}
         }
@@ -223,25 +224,6 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	break;
 		}
 		
-		/*if (person.getTeleportet() &&
-				(portal.onPortal(person.getPosition()) != 0
-				&& portal2.onPortal(person.getPosition()) != 0)) {
-		//person.keyPressed(e); // do what camera would do 
-		switch(e.getKeyCode()) {  
-        case KeyEvent.VK_N: // switch to/from night time mode 
-        	if (daylight == true) { // switch to night mode
-        		daylight = false;
-        		//setDayLighting(gl);
-        	} else { // switch to day mode 
-        		daylight = true; 
-        	}
-        	break;
-		}
-		if (person.getTeleportet() &&
-				(!portal.onPortal(person.getPosition())
-				&& !portal2.onPortal(person.getPosition()))) {
-			person.setTeleportet(false);
-		}*/
 		//If hit hits the first cube of the portal
 		if (portal.getPortal() && portal2.getPortal()
 				//&& !person.getTeleportet()
@@ -332,6 +314,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			portal.setPosition(person.getPosition().getX() + dx,
 					person.getPosition().getY(),
 					person.getPosition().getZ() + dz);
+			portal.setRotY(person.getCam().getRotY() + 90);
 			portal.setPortal(true);
 			System.out.println("Mouse 1 pressed");
 		}
@@ -346,12 +329,14 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			portal2.setPosition(person.getPosition().getX() + dx,
 					person.getPosition().getY(),
 					person.getPosition().getZ() + dz);
+			portal2.setRotY(person.getCam().getRotY() + 90);
 			portal2.setPortal(true);
-			System.out.println("Mouse 3 pressed");
+			
 		}
 		else if (arg0.getButton() == MouseEvent.BUTTON3) {
 			portal2.setPortal(false);
 		}
+		
 
 	}
 
