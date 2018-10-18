@@ -112,6 +112,7 @@ public class Person implements KeyListener {
 
     		}
     	}
+		
 	}
 	
     public void setTerrain(Terrain terrain) {
