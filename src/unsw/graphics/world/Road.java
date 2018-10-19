@@ -177,10 +177,10 @@ public class Road extends WorldObject {
      * 
      * @param initPoints
      */
-    public void makeRoad(GL3 gl) { //, int width, int depth) {    	
+    public void makeRoad(GL3 gl) {    	
     	int size = 0, count = 0;
         float w  = this.width/2;
-        float step = 0.01f;
+        float step = 0.05f;
         float alt = altitude + 0.001f;
         
         List<Point2D> curve = new ArrayList<Point2D>(); // use points on curve and width of road to get points on second curve 
@@ -189,9 +189,8 @@ public class Road extends WorldObject {
         
         List<Point3D> curve1 = new ArrayList<Point3D>();
         List<Point3D> curve2 = new ArrayList<Point3D>();
-        size = curve.size();
              	
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < curve.size(); i++) {
         	Point2D pt = curve.get(i);
         	Vector3 normal = normals.get(i);        	
         	curve1.add(new Point3D(pt.getX() - w * normal.getX(), alt, pt.getY() - w * normal.getY()));
@@ -202,7 +201,7 @@ public class Road extends WorldObject {
         List<Integer> indices = new ArrayList<Integer>();
         List<Point2D> texCoords = new ArrayList<Point2D>();
         
-        drawTriangles(vertices, indices, texCoords, size, curve1, curve2);
+        drawTriangles(vertices, indices, texCoords, curve1, curve2);
 
         setVertexBuffer(vertices);
     	setIndicesBuffer(indices);
@@ -214,14 +213,18 @@ public class Road extends WorldObject {
     
     
     
-    private void drawTriangles(List<Point3D> vertices, List<Integer> indices, List<Point2D> texCoords, int size, List<Point3D> curve1, List<Point3D> curve2) {
+    private void drawTriangles(List<Point3D> vertices, List<Integer> indices, List<Point2D> texCoords, List<Point3D> curve1, List<Point3D> curve2) {
     	int count = 0;
-        for (int i = 0; i < size -1 ; i++) {
+    	int size = curve1.size();
+    	
+        for (int i = 0; i < size - 1; i++) {
 			// generate vertices points 
 			Point3D A = curve1.get(i); 		// new Point3D(i, altitudes[i][k], k);
 			Point3D B = curve1.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k], k);
 			Point3D C = curve2.get(i); 		// new Point3D(i, altitudes[i][k+1], k+1);
 			Point3D D = curve2.get(i+1); 	// new Point3D(i+1, altitudes[i+1][k+1], k+1);
+			
+		
 			
 			// add vertices list
 			vertices.add(D); // D = 0
@@ -230,10 +233,10 @@ public class Road extends WorldObject {
 			vertices.add(B); // B = 3
 
 			// add tex coords to list 
-			texCoords.add(new Point2D(D.getX(),D.getZ()));
-			texCoords.add(new Point2D(B.getX(),B.getZ()));
-			texCoords.add(new Point2D(A.getX(),A.getZ()));
-			texCoords.add(new Point2D(C.getX(),C.getZ()));
+			texCoords.add(new Point2D(0,0));
+			texCoords.add(new Point2D(0,1));
+			texCoords.add(new Point2D(1,1));
+			texCoords.add(new Point2D(1,0));
 						
 			// add indices to indices list 
 			indices.add(count*4);			// 0
@@ -254,19 +257,13 @@ public class Road extends WorldObject {
     public void getPointsOnCurve(List<Point2D> curve, List<Vector3> normals, float step){
     	// use points calculate bezier curve 
     	// increment by a value to store a point from the bezier curve at t
-    	/*int size = points.size();
-    	
-    	
-    	int i = (int)Math.floor(t);
-        t = t - i;
-        
-        i *= 3;*/
-    	
-    	for (float t = 0; t <= 1; t+=step) {
-    		curve.add(point(t));
-    		Vector3 normal = normal(tangent(t)).normalize();
-        	normals.add(normal);
-    	}
+       for (int i = 0; i < size(); i++) {
+    	   for (float t = i; t <= (i+1); t+=step) {
+       			curve.add(point(t));
+       			Vector3 normal = normal(tangent(t)).normalize();
+       			normals.add(normal);
+    	   }
+       }
     }
     
    /**

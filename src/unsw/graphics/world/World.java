@@ -42,9 +42,9 @@ import unsw.graphics.world.Camera;
  */
 public class World extends Application3D implements KeyListener, MouseListener {
     private static WorldObject root;
-    private Terrain terrain;
-    private Camera camera;
-    private Person person;
+    private static Terrain terrain;
+    private static Camera camera;
+    private static Person person;
     private TriangleMesh terrainMesh;
     
     private Portal portal;
@@ -73,8 +73,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
         day = true;
         root = new WorldObject();        
         
+        
+        
         try {
-        	person = new Person(terrain, root);
+        	//person = new Person(terrain, root);
         	portal = new Portal(root);
 			portal2 = new Portal(root);
 		} catch (IOException e) {
@@ -97,7 +99,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        Terrain terrain = LevelIO.load(new File(args[0]));
+        //Terrain 
+        terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain); 
         
         // set parent for each object in world 
@@ -106,7 +109,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	terrain.trees().get(i).setParent(root);
         for (int i = 0; i < terrain.roads().size(); i++) // set each road parent to root 
         	terrain.roads().get(i).setParent(root);
-        
+        camera = new Camera(terrain, root);
+        person = new Person(camera);
+        camera.addChild(person);
         world.start();
     }
 
@@ -115,69 +120,68 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	public void init(GL3 gl) {
 		super.init(gl);
 		getWindow().addKeyListener(person);
-		getWindow().addKeyListener(person.getCam());
+		getWindow().addKeyListener(camera);
+
+		//getWindow().addKeyListener(person.getCam());
 		getWindow().addKeyListener(this);
 		getWindow().addMouseListener(this);
         
+		// initialize classes 
 		person.init(gl);
-		
 		portal.init(gl);
 		portal2.init(gl);
-		
         terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
 		terrainMesh = terrain.getTriMesh();
         terrainMesh.init(gl);
-        
-        person.setTerrain(terrain);
+        //person.setTerrain(terrain);
 	    
-       
+        // generate buffers 
         int[] names = new int[3];
         gl.glGenBuffers(3, names, 0);
-
         verticesName = names[0];
         texCoordsName = names[1];
         indicesName = names[2];
         
-        Shader day = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); 
-	    day.use(gl);
-
-        grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
+        // initialize and set the shader and its lighting properties
+        Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); 
+	    shader.use(gl);
+	    
+        // initialize textures
+        /*grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
-        //road = new Texture(gl, "res/textures/kittens.jpg", "jpg", true);
-        road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
-        
-        setDayLighting(gl); // set the lighting properties for the shader
+        road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);*/
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
-        
         // for day / night mode 
-        if (day == true) {
-        	setDayLighting(gl);
-        } else {
-        	setNightLighting(gl);
-        }
+        setLighting(gl);
         
-
         Shader.setInt(gl,"tex", 0);
-        
+        grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         // to draw terrain 
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, grass.getId());
         Shader.setPenColor(gl, Color.GREEN);
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         terrainMesh.draw(gl);
+        grass.destroy(gl);
         
         // to draw trees 
-        gl.glActiveTexture(GL.GL_TEXTURE0 + 1);
+        trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
+        gl.glActiveTexture(GL.GL_TEXTURE0);// + 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, trees.getId());
         terrain.drawTrees(gl);
+        trees.destroy(gl);
         
         // to draw roads 
+        road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, road.getId());
         Shader.setPenColor(gl, Color.WHITE);
         terrain.drawRoads(gl);
+        road.destroy(gl);
         
         if(!person.isFps()) {
         	person.drawPerson(gl);
@@ -283,42 +287,54 @@ public class World extends Application3D implements KeyListener, MouseListener {
      * @param gl
      * @param shader
      */
-	public void setDayLighting(GL3 gl) {
-		
+	public void setLighting(GL3 gl) {
 		 // Set the lighting properties
-        Shader.setViewMatrix(gl, person.getfps().getMatrix());
-        Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-	   // Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
-
+		
+		// get sunlight vector coords
+		float xSun = terrain.getSunlight().getX();
+		float ySun = terrain.getSunlight().getY();
+		float zSun = terrain.getSunlight().getZ();
+		
+		// get torchDir vector coords 
+		float torchDist = 10; 
+		//double rads = Math.toRadians(person.getCam().getGlobalRotY()); 
+		double rads = Math.toRadians(camera.getGlobalRotY()); 
+		float dx = (float) Math.sin(rads)*torchDist;
+		float dy = 0; 
+		float dz = (float) Math.cos(rads)*torchDist;
+		
+        //person.getCam().setView(gl); // set view matrix 
+		camera.setView(gl); // set view matrix 
+        
+        
+        Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
-        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
         // Set the material properties
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
         Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
+        
+        // for torch light
+        //Shader.setFloat(gl, "torchCutoffAngle", 45f); // in degrees
+        //Shader.setPoint3D(gl, "lightPos", person.getCam().getGlobalPosition()); // get camera position in world coords 
+        //Shader.setPoint3D(gl, "torchDir", new Point3D(dx,dy,dz)); // set torchDir vector 
+        
+        if (day) {
+        	// light properties for day
+        	//Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 
+           // Shader.setPoint3D(gl, "lightPos", new Point3D(0f, 0f, 0f)); // set lightPos to 0 
+        	Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+     	   	//Shader.setColor(gl, "lightIntensityTorch", Color.BLACK); // turn off torchlight 
+        } else { 
+        	// light properties for night 
+            //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 0)); // set sunlight to 0 
+            //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5)); // set lightPos to a vector 
+        	Shader.setColor(gl, "ambientIntensity", new Color(0.01f, 0.01f, 0.01f));
+           // Shader.setColor(gl, "lightIntensityTorch", Color.YELLOW); // turn on torchlight
+        }
+
 	}
-	
-	public void setNightLighting(GL3 gl) {
-		///Shader night = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/torchLight.glsl"); 
-	    //night.use(gl);
-		
-		 // Set the lighting properties
-	    Shader.setViewMatrix(gl, person.getfps().getMatrix());
-        //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 5));
-
-	    Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
- 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
- 		Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
- 		// Set the material properties
- 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
- 		Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
- 		Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
- 		Shader.setFloat(gl, "phongExp", 16f);
-	}
-
-
-
 
 
 /**/ 
@@ -326,12 +342,15 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 		if(arg0.getButton() == MouseEvent.BUTTON1 && !portal.getPortal()) {
 			float dir = -5;
-  			double rads = Math.toRadians(person.getRot()); 
+  			//double rads = Math.toRadians(person.getCam().getRotY()); 
+			double rads = Math.toRadians(camera.getRotY()); 
   			float dz = (float) (dir*Math.cos(rads));
   			float dx = (float) (dir*Math.sin(rads));
-			portal.setPosition(person.getPosition().getX() + dx,
-					person.getPosition().getY(),
-					person.getPosition().getZ() + dz);
+			portal.setPosition(camera.getPosition().getX() + dx,
+					camera.getPosition().getY(),
+					camera.getPosition().getZ() + dz);/*person.getCam().getPosition().getX() + dx,
+					person.getCam().getPosition().getY(),
+					person.getCam().getPosition().getZ() + dz);*/
 			portal.setPortal(true);
 			System.out.println("Mouse 1 pressed");
 		}
@@ -340,12 +359,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		}
 		if(arg0.getButton() == MouseEvent.BUTTON3 && !portal2.getPortal()) {
 			float dir = -5;
-  			double rads = Math.toRadians(person.getRot()); 
+  			double rads = Math.toRadians(camera.getRotY()); 
   			float dz = (float) (dir*Math.cos(rads));
   			float dx = (float) (dir*Math.sin(rads));
-			portal2.setPosition(person.getPosition().getX() + dx,
-					person.getPosition().getY(),
-					person.getPosition().getZ() + dz);
+			portal2.setPosition(camera.getPosition().getX() + dx,
+					camera.getPosition().getY(),
+					camera.getPosition().getZ() + dz);
 			portal2.setPortal(true);
 			System.out.println("Mouse 3 pressed");
 		}
