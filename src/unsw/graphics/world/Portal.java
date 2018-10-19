@@ -22,6 +22,7 @@ public class Portal extends WorldObject {
 		isPortal = false;
 		front = new Camera(parent);
 		back = new Camera(parent);
+		this.setRotY(0);
 	}
 	
     public void init(GL3 gl) {
@@ -34,7 +35,7 @@ public class Portal extends WorldObject {
 		setScale(0.5f);
 		CoordFrame3D view = CoordFrame3D.identity()
 				.translate(getPosition())
-				.scale(getScale(), getScale(), getScale());
+				.scale(getScale(), getScale(), getScale()).rotateY(getRotY());
 		model.draw(gl, view);
 	}
 	public boolean getPortal() {
@@ -55,7 +56,7 @@ public class Portal extends WorldObject {
 				&& (y + yTresh > p.getY() && y - yTresh < p.getY())
 				&& (z + zTresh > p.getZ() && z < p.getZ())) {
 			System.out.println("Returned 1");
-			return 1; //Represtet portals as 2 cubes, this is first cube
+			return 1; //Represent portals as 2 cubes, this is first cube
 		}
 		else if ((x > p.getX() && x - xTresh < p.getX()) 
 				&& (y + yTresh > p.getY() && y - yTresh < p.getY())
