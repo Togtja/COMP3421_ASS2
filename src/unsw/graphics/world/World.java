@@ -159,12 +159,9 @@ public class World extends Application3D implements KeyListener, MouseListener {
         super.display(gl);
         
 		person.setView(gl); // set view matrix, draw camera, draw children of camera 
-		
-		//camera.drawAvatar(gl);
-		
+				
         // for day / night mode 
         setLighting(gl);
-        
         
         Shader.setInt(gl,"tex", 0);
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
@@ -192,7 +189,15 @@ public class World extends Application3D implements KeyListener, MouseListener {
         terrain.drawRoads(gl);
         road.destroy(gl);
         
+        
+        Texture texture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);            
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+        //Shader.setPenColor(gl, Color.WHITE);
     	person.drawPerson(gl);
+    	texture.destroy(gl);
+
+    	
 
 
 /*

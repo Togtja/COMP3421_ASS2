@@ -38,7 +38,7 @@ public class Person extends WorldObject implements KeyListener {
     	//this.parent = parent;
     	this.setPosition(parent.getPosition());
     	this.scale(5);
-        model = new TriangleMesh("res/models/bunny.ply");     
+        model = new TriangleMesh("res/models/bunny.ply", true, true);
         camera = new Camera(parent);
         terrain = t;
         fpsMode = false; //true; 
@@ -65,6 +65,8 @@ public class Person extends WorldObject implements KeyListener {
     	//				-(float)Math.sin(Math.toRadians(camera.getRotY())),
     	//				-5f,
     	//				-(float)Math.cos(Math.toRadians(camera.getRotY())));
+        
+        
         model.draw(gl, frame); 
     	}
     }
