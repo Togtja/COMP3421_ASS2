@@ -233,7 +233,7 @@ public class Camera extends WorldObject implements  KeyListener {
   			y = person.getPosition().getY();
   			z  = this.getPosition().getZ() + personVect.getY();
   			person.setPosition(x,y,z);
-  			
+  			//person.rotateY(-rotShift);
         	break;
         	
   		case KeyEvent.VK_RIGHT:
@@ -249,7 +249,7 @@ public class Camera extends WorldObject implements  KeyListener {
   			y = person.getPosition().getY();
   			z  = this.getPosition().getZ() + personVect.getY();
   			person.setPosition(x,y,z);
-  			
+  			//person.rotateY(-rotShift);
   			
         	break;
         }
