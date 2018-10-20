@@ -44,11 +44,15 @@ public class Person extends WorldObject implements KeyListener {
     }
     
     public void drawPerson(GL3 gl) {
+    	if (fpsMode) {
+    		model.destroy(gl);
+    	} else {
         Shader.setPenColor(gl, Color.BLUE);
         CoordFrame3D frame = CoordFrame3D.identity()
     			.translate(getPosition())
     			.scale(getScale(), getScale(), getScale());
         model.draw(gl, frame); 
+    	}
     }
 
     
