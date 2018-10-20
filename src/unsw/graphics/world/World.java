@@ -45,7 +45,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private static WorldObject root;
     private static Terrain terrain;
     private static Camera camera;
-   // private static Person person;
+    //private static Person person;
     //private Camera camera;
     //private Person person;
     private TriangleMesh terrainMesh;
@@ -70,8 +70,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
-    	super("Assignment 2", 2000, 2000);
-    	//super("Assignment 2", 600, 600);
+    	//super("Assignment 2", 2000, 2000);
+    	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
         day = true;
         root = new WorldObject();        
@@ -235,33 +235,35 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	else { day = true; }
         	break;
 		}
-		
-		//If hit hits the first cube of the portal
-		if (portal.getPortal() && portal2.getPortal()
-				//&& !person.getTeleportet()
-				&& portal.onPortal(camera.getPerson().getPosition(), portXTresh, portZTresh) == 1) {
+		Point3D tpFromPos;
+		if (camera.getPerson().isFps()) {
+			tpFromPos = camera.getPosition();
+		}
+		else  {
+			tpFromPos = camera.getPerson().getPosition();
+		}
+		if(portal.getPortal() && portal2.getPortal()) {
+			//If hit hits the first cube of the portal
+			if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
 				
+				camera.setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
 				camera.getPerson().setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
-				//person.setTeleportet(true);
-		}
-		else if (portal.getPortal() && portal2.getPortal()
-				//&& !person.getTeleportet()
-				&& portal.onPortal(camera.getPerson().getPosition(), portXTresh, portZTresh) == 2) {
-			camera.getPerson().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
-		}
-		if (portal.getPortal() && portal2.getPortal()
-				//&& !person.getTeleportet()
-				&& portal2.onPortal(camera.getPerson().getPosition(), portXTresh, portZTresh) == 1) {
+			}
+			else if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
 				
+				camera.setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
+				camera.getPerson().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
+			}
+			if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
+				
+				camera.setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
 				camera.getPerson().setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
-				//person.setTeleportet(true);
-		}
-		else if (portal.getPortal() && portal2.getPortal()
-				//&& !person.getTeleportet()
-				&& portal2.onPortal(camera.getPerson().getPosition(), portXTresh, portZTresh) == 2) {
+			}
+			else if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
 				
+				camera.setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
 				camera.getPerson().setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
-				//person.setTeleportet(true);
+			}
 		}
 	}
 
