@@ -70,8 +70,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
-    	//super("Assignment 2", 2000, 2000);
-    	super("Assignment 2", 1000, 1000);
+    	super("Assignment 2", 2000, 2000);
+    	//super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
         day = true;
         root = new WorldObject();        
@@ -132,7 +132,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		getWindow().addMouseListener(this);
         
 		// initialize classes 
-		//person.init(gl);
+		camera.getPerson().init(gl);
 		portal.init(gl);
 		portal2.init(gl);
         terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
@@ -191,7 +191,15 @@ public class World extends Application3D implements KeyListener, MouseListener {
         road.destroy(gl);
         
         if(!camera.getPerson().isFps()) {
+            Texture texture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);            
+            gl.glActiveTexture(GL.GL_TEXTURE0);
+            gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+            
+            Shader.setPenColor(gl, Color.WHITE);
+            
+            
     		camera.drawAvatar(gl);
+    		trees.destroy(gl);
         }
         if(portal.getPortal()) {
         	portal.drawPortal(gl);
@@ -303,26 +311,30 @@ public class World extends Application3D implements KeyListener, MouseListener {
         // Set the material properties
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-        Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+        //Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
         
         // for torch light
-        //Shader.setFloat(gl, "torchCutoffAngle", 45f); // in degrees
-        //Shader.setPoint3D(gl, "lightPos", person.getCam().getGlobalPosition()); // get camera position in world coords 
-        //Shader.setPoint3D(gl, "torchDir", new Point3D(dx,dy,dz)); // set torchDir vector 
+        Shader.setFloat(gl, "cutoff", 90f); // in degrees
+        Shader.setPoint3D(gl, "posTorch", camera.getGlobalPosition()); // get camera position in world coords 
+        Shader.setFloat(gl, "attenuationFactor", 25f); // set torchDir vector 
+        Shader.setColor(gl, "lightIntensityTorch", Color.YELLOW); // turn on torchlight
+
         
         if (day) {
         	// light properties for day
         	//Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 
-           // Shader.setPoint3D(gl, "lightPos", new Point3D(0f, 0f, 0f)); // set lightPos to 0 
+            Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         	Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
-     	   	//Shader.setColor(gl, "lightIntensityTorch", Color.BLACK); // turn off torchlight 
+            Shader.setPoint3D(gl, "dirTorch", new Point3D(0,0,0)); // set torchDir vector 
+
+
         } else { 
         	// light properties for night 
             //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 0)); // set sunlight to 0 
-            //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5)); // set lightPos to a vector 
+            Shader.setColor(gl, "specularCoeff", new Color(0.5f, 0.5f, 0.5f));
         	Shader.setColor(gl, "ambientIntensity", new Color(0.01f, 0.01f, 0.01f));
-           // Shader.setColor(gl, "lightIntensityTorch", Color.YELLOW); // turn on torchlight
+            Shader.setPoint3D(gl, "dirTorch", new Point3D(0,0,1)); // set torchDir vector 
         }
 
 	}

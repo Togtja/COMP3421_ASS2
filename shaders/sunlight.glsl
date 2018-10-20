@@ -17,13 +17,13 @@ uniform float phongExp;
 
 uniform sampler2D tex;
 
+
 // for torchlight
-uniform vec4 lightPos;
-/*uniform vec3 torchDir;  // in object coords
-uniform float torchCutoffAngle; // in degrees
 uniform vec3 lightIntensityTorch; // for torchlight
+uniform vec3 dirTorch;  // in object coords
+uniform vec3 posTorch;
+uniform float cutoff; // in degrees
 uniform float attenuationFactor;
-*/
 
 in vec4 viewPosition;
 in vec3 m;
@@ -51,6 +51,20 @@ void main()
 
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
+    // for torchlight
+    //double cutoff = radians(45);
+    vec3 sTorch = normalize(view_matrix*vec4(posTorch,1) - viewPosition).xyz;
+
+
+    float cosbeta = dot(sTorch, normalize(dirTorch));
+
+    vec3 torchSpecular;
+    if (acos(cosbeta) < radians(cutoff)){
+    	torchSpecular = specularCoeff*lightIntensityTorch*pow(cosbeta, attenuationFactor);
+    } else {
+    	torchSpecular = vec3(0);
+    }
+
 	// Compute the s, v and r vectors for the torchlight
 /*
 
@@ -61,21 +75,14 @@ void main()
     // calculate angle between the spotlight direction vector (s) and the light vector (r?)
     //float beta = dot(normalize(spotDirection), -normalize(lightDirection));
     float beta = dot(normalize(torchDir), sTorch);
-    beta = max(angle, 0);
+    beta = max(angle, 0);*/
 
 
-    // get specular component of torch by testing whether the vertex is located within the cone
-    vec3 torchSpecular;
-    if (acos(beta) < radians(torchCutoffAngle))
-    	torchSpecular = lightIntensityTorch*pow((cos(beta)), attenuationFactor); // set torchlight I = Is(cos(beta))^(attenuationFactor)
-    else
-    	torchSpecular = vec3(0); // no torchlight specular component
 
-*/
 
 
     // final calculation output
-    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);// + vec4(torchSpecular, 1);
+    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1) + vec4(torchSpecular, 1);
 
 }
 
