@@ -1,0 +1,8 @@
+PERSON:
+	Make so that it rotates correctly
+	Make transiton look like you go to the eyes of the avatar
+PORTAL:
+	Make it so you can look through one side out the other
+	Make the "entrence" rotate with the portal"
+LIGHT:
+	Make the normal sunlight light up the Portals and our Avatar
