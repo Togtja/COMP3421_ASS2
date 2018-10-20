@@ -45,7 +45,6 @@ public class Tree extends WorldObject {
     }
 
     public void drawTree(GL3 gl) {//, CoordFrame3D frame) {
-    	//tree.init(gl); 
     	Shader.setPenColor(gl, Color.BLUE);
     	CoordFrame3D frame = CoordFrame3D.identity()
     			.translate(getPosition())

@@ -25,6 +25,7 @@ import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
+import unsw.graphics.Vector4;
 import unsw.graphics.examples.sailing.objects.Mouse;
 import unsw.graphics.world.Person;
 import unsw.graphics.geometry.Point2D;
@@ -69,8 +70,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
-    	//super("Assignment 2", 2000, 2000);
-    	super("Assignment 2", 600, 600);
+    	super("Assignment 2", 2000, 2000);
+    	//super("Assignment 2", 600, 600);
         this.terrain = terrain;
         day = true;
         root = new WorldObject();        
@@ -112,8 +113,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
         for (int i = 0; i < terrain.roads().size(); i++) // set each road parent to root 
         	terrain.roads().get(i).setParent(root);
         camera = new Camera(terrain, root);
-        person = new Person(camera);
-        camera.addChild(person);
+        camera.getPerson().setTerrain(terrain);
+       // person = new Person(root);
+        //person = new Person(camera);
+        //camera.addChild(person);
         world.start();
     }
 
@@ -121,7 +124,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		getWindow().addKeyListener(person);
+		getWindow().addKeyListener(camera.getPerson());
 		getWindow().addKeyListener(camera);
 
 		//getWindow().addKeyListener(person.getCam());
@@ -129,7 +132,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		getWindow().addMouseListener(this);
         
 		// initialize classes 
-		person.init(gl);
+		//person.init(gl);
 		portal.init(gl);
 		portal2.init(gl);
         terrain.makeTerrain(gl); // gets vertex, indices, and tex coord buffers for terrain
@@ -147,18 +150,19 @@ public class World extends Application3D implements KeyListener, MouseListener {
         // initialize and set the shader and its lighting properties
         Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl", "shaders/sunlight.glsl"); 
 	    shader.use(gl);
-	    
-        // initialize textures
-        /*grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
-        trees = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
-        road = new Texture(gl, "res/textures/road1.jpg", "jpg", true);*/
 	}
 	
 	@Override
     public void display(GL3 gl)  {
         super.display(gl);
+        
+		camera.setView(gl); // set view matrix, draw camera, draw children of camera 
+		
+		//camera.drawAvatar(gl);
+		
         // for day / night mode 
         setLighting(gl);
+        
         
         Shader.setInt(gl,"tex", 0);
         grass = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
@@ -168,6 +172,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
         Shader.setPenColor(gl, Color.GREEN);
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_FILL); // GL3.GL_LINE); // DEBUG: shows as lines vs. filled in ground 
         terrainMesh.draw(gl);
+		camera.drawAvatar(gl);
+
         grass.destroy(gl);
         
         // to draw trees 
@@ -185,8 +191,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
         terrain.drawRoads(gl);
         road.destroy(gl);
         
-        if(!person.isFps()) {
-        	person.drawPerson(gl);
+        if(!camera.getPerson().isFps()) {
+        	//person.drawPerson(gl);
         }
         if(portal.getPortal()) {
         	portal.drawPortal(gl);
@@ -289,7 +295,6 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		float dz = (float) Math.cos(rads)*torchDist;
 		
         //person.getCam().setView(gl); // set view matrix 
-		camera.setView(gl); // set view matrix 
         
         
         Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 

@@ -372,7 +372,7 @@ public class WorldObject {
         // recursively call draw function for every child of object 
         List<WorldObject> children = new ArrayList<WorldObject>(myChildren);
         for (WorldObject so : children) {	// recursively draw tree 
-            so.draw(gl,objectFrame);         		
+            so.draw(gl, objectFrame);         		
         }
 
     }
