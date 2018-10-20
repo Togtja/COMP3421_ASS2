@@ -16,13 +16,13 @@ public class Portal extends WorldObject {
 	private Camera front;
 	private Camera back;
 	
-	//DEBUGGING
+/*	//DEBUGGING
 	Point3D p1;
 	Point3D p2;
 	Point3D p3;
 	Point3D p4;
 	//
-	
+*/	
 	public Portal(WorldObject parent) throws IOException {
 		super(parent);
 		model = new TriangleMesh("res/models/thingi.ply");
@@ -50,10 +50,10 @@ public class Portal extends WorldObject {
 				.translate(getPosition())
 				.scale(getScale(), getScale(), getScale()).rotateY(getRotY());
 		model.draw(gl, view);
-		p1.draw(gl,CoordFrame3D.identity());
+/*		p1.draw(gl,CoordFrame3D.identity());
 		p2.draw(gl,CoordFrame3D.identity());
 		p3.draw(gl,CoordFrame3D.identity());
-		p4.draw(gl,CoordFrame3D.identity());
+		p4.draw(gl,CoordFrame3D.identity());*/
 	}
 	public boolean getPortal() {
 		return isPortal;

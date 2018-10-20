@@ -159,7 +159,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
         super.display(gl);
         
 		person.setView(gl); // set view matrix, draw camera, draw children of camera 
-				
+		
+		
         // for day / night mode 
         setLighting(gl);
         
