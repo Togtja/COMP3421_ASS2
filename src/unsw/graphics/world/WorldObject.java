@@ -40,6 +40,10 @@ public class WorldObject {
     
     // Is this part of the tree showing?
     private boolean amShowing;
+    
+    //Do I have a terrain to show?
+    private boolean haveTerrain; 
+    Terrain terrain;
 
     /**
      * Special constructor for creating the root node. Do not use otherwise.
@@ -57,6 +61,7 @@ public class WorldObject {
         myTranslation = new Point3D(0,0,0);
 
         amShowing = true;
+        haveTerrain = false;
     }
 
     /**
@@ -81,6 +86,7 @@ public class WorldObject {
 
         // initially showing
         amShowing = true;
+        haveTerrain = false;
     }
 
     /**
@@ -528,6 +534,18 @@ public class WorldObject {
         myParent = parent;
         myParent.myChildren.add(this);
     }
-    
+    public void setTerrain(Terrain t) {
+    	terrain = t;
+    	haveTerrain = true;
+    }
+    /*
+    public Terrain getTerrain() {
+    	if(haveTerrain) {
+    		System.out.println("YOU SHOULD HAVE TERRAIN!");
+    		return terrain;
+    	}
+    	System.out.println("YOU DON'T HAVE A TERRAIN!");
+    	return terrain;
+    }*/
 
 }

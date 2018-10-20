@@ -101,6 +101,9 @@ public class CoordFrame3D {
     public CoordFrame3D scale(float x, float y, float z) {
         return new CoordFrame3D(matrix.multiply(Matrix4.scale(x,y,z)));
     }
+    public CoordFrame3D scale(float s) {
+        return new CoordFrame3D(matrix.multiply(Matrix4.scale(s,s,s)));
+    }
 
     /**
      * Get the matrix representation of this coordinate frame.
