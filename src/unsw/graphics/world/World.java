@@ -295,35 +295,30 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		float ySun = terrain.getSunlight().getY();
 		float zSun = terrain.getSunlight().getZ();
 		
-		// get torchDir vector coords 
-		float torchDist = 10; 
-		//double rads = Math.toRadians(person.getCam().getGlobalRotY()); 
-		double rads = Math.toRadians(camera.getGlobalRotY()); 
-		float dx = (float) Math.sin(rads)*torchDist;
-		float dy = 0; 
-		float dz = (float) Math.cos(rads)*torchDist;
+		Point3D torchPos;
+		// check fps
+		if (camera.getPerson().isFps()) {
+			torchPos = new Point3D(camera.getGlobalPosition().getX(), camera.getGlobalPosition().getY(), camera.getGlobalPosition().getZ());
+		} else { 
+			torchPos = new Point3D(camera.getPerson().getGlobalPosition().getX(), camera.getPerson().getGlobalPosition().getY() + 0.2f, camera.getPerson().getGlobalPosition().getZ());
+		}
 		
-        //person.getCam().setView(gl); // set view matrix 
-        
-        
         Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
         // Set the material properties
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-        //Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         Shader.setFloat(gl, "phongExp", 16f);
         
         // for torch light
         Shader.setFloat(gl, "cutoff", 90f); // in degrees
-        Shader.setPoint3D(gl, "posTorch", camera.getGlobalPosition()); // get camera position in world coords 
-        Shader.setFloat(gl, "attenuationFactor", 25f); // set torchDir vector 
+        Shader.setPoint3D(gl, "posTorch", torchPos);//camera.getGlobalPosition()); // get camera position in world coords 
+        Shader.setFloat(gl, "attenuationFactor", 40f); // set torchDir vector 
         Shader.setColor(gl, "lightIntensityTorch", Color.YELLOW); // turn on torchlight
 
         
         if (day) {
         	// light properties for day
-        	//Shader.setPoint3D(gl, "sunlight", new Point3D(xSun,ySun,zSun)); // set sunlight vector to passed in vector 
             Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
         	Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
             Shader.setPoint3D(gl, "dirTorch", new Point3D(0,0,0)); // set torchDir vector 
@@ -331,12 +326,10 @@ public class World extends Application3D implements KeyListener, MouseListener {
 
         } else { 
         	// light properties for night 
-            //Shader.setPoint3D(gl, "sunlight", new Point3D(0, 0, 0)); // set sunlight to 0 
             Shader.setColor(gl, "specularCoeff", new Color(0.5f, 0.5f, 0.5f));
         	Shader.setColor(gl, "ambientIntensity", new Color(0.01f, 0.01f, 0.01f));
             Shader.setPoint3D(gl, "dirTorch", new Point3D(0,0,1)); // set torchDir vector 
         }
-
 	}
 
 
