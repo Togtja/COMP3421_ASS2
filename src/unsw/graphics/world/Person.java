@@ -185,11 +185,12 @@ public class Person extends WorldObject implements KeyListener {
     	if (x >= w || x < 0 || z >= d || z < 0) { } // index out of bounds 
     	else {
     		
-    		y = terrain.altitude(x, z); 
-    		System.out.println(y);	
+    		y = terrain.altitude(x, z);
     	}
 
-    	camera.setPosition(camera.getPosition().getX(), y+yOff, camera.getPosition().getZ());
+    	camera.setPosition(camera.getPosition().getX(),
+    			y+yOff,
+    			camera.getPosition().getZ());
     	
     }
     
@@ -201,10 +202,8 @@ public class Person extends WorldObject implements KeyListener {
     	case KeyEvent.VK_R:
     		if(fpsMode && !e.isAutoRepeat()) {
     			fpsMode = false;
-    			System.out.println("FPS IS FALSE");
        		} else if(!e.isAutoRepeat()) {
     			fpsMode = true;
-    			System.out.println("FPS IS TRUE");
     		}
     	}
 	}

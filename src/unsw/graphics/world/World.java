@@ -70,8 +70,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     private Particle[] rainDrop = new Particle[MAXPARTICLES];
     
     public World(Terrain terrain) {
-    	super("Assignment 2", 2000, 2000);
-    	//super("Assignment 2", 1000, 1000);
+    	//super("Assignment 2", 2000, 2000);
+    	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
         day = true;
         root = new WorldObject();
@@ -252,7 +252,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		}
 		Point3D tpFromPos;
 		if (person.isFps()) {
-			tpFromPos = person.getPosition();
+			tpFromPos = person.getCamera().getPosition();
 		}
 		else  {
 			tpFromPos = person.getPosition();
@@ -261,22 +261,22 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			//If hit hits the first cube of the portal
 			if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
 				
-				person.setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
+				person.getCamera().setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
 				//camera.getPerson().setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
 			}
 			else if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
 				
-				person.setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
+				person.getCamera().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
 				//camera.getPerson().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
 			}
 			if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
 				
-				person.setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
+				person.getCamera().setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
 				//camera.getPerson().setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
 			}
 			else if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
 				
-				person.setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
+				person.getCamera().setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
 				//camera.getPerson().setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
 			}
 		}
@@ -359,12 +359,11 @@ public class World extends Application3D implements KeyListener, MouseListener {
 					camera.getPosition().getY(),
 					camera.getPosition().getZ() + dz);*/
 			portal.setPosition(person.getPosition().getX() + dx,
-					person.getPosition().getY(),
+					person.getPosition().getY() + person.getYOff(),
 					person.getPosition().getZ() + dz);
 			portal.setRotY(person.getCamera().getRotY() + 90);
 			//portal.setRotY(camera.getRotY() + 90);
 			portal.setPortal(true);
-			System.out.println("Mouse 1 pressed");
 		}
 		else if (arg0.getButton() == MouseEvent.BUTTON1) {
 			portal.setPortal(false);
@@ -379,7 +378,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 					camera.getPosition().getY(),
 					camera.getPosition().getZ() + dz);*/
 			portal2.setPosition(person.getPosition().getX() + dx,
-					person.getPosition().getY(),
+					person.getPosition().getY() + person.getYOff(),
 					person.getPosition().getZ() + dz);
 			portal2.setRotY(person.getCamera().getRotY() + 90);
 			//portal2.setRotY(camera.getRotY() + 90);
