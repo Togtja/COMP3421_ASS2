@@ -1,8 +1,15 @@
 PERSON:
-	Make so that it rotates correctly
-	Make transiton look like you go to the eyes of the avatar
+	Make so that it rotates correctly			DONE
+	Make transiton look like you go to the eyes of the avatar DONE
+	Fix going up a the hill in fps mode		DONE
+	Fix transing so it goes back to the correct location
+	Fix the lagging bunny
 PORTAL:
 	Make it so you can look through one side out the other
 	Make the "entrence" rotate with the portal"
+	Make you keep the same relative rotation when you exit the portal: SHOULD BE FIXED
+	Get the portal in the correct hight when spawning them DONE
+	When teleporting in avatar-mode make the avatar popup instantly
 LIGHT:
-	Make the normal sunlight light up the Portals and our Avatar
+	Make the normal sunlight light up the Portals and our Avatar (Also in fps mode) 
+	

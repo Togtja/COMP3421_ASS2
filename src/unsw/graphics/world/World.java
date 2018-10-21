@@ -52,8 +52,8 @@ public class World extends Application3D implements KeyListener, MouseListener {
     
     private Portal portal;
     private Portal portal2;
-    private float portXTresh = 2f;
-    private float portZTresh = 0.5f;
+    private float portXTresh = 0.7f;
+    private float portZTresh = 2f;
     
     private int verticesName;
     private int texCoordsName;
@@ -215,11 +215,14 @@ public class World extends Application3D implements KeyListener, MouseListener {
         }
         */
         if(portal.getPortal()) {
+        	Shader.setPenColor(gl, Color.BLUE);
         	portal.drawPortal(gl);
         }
         if(portal2.getPortal()) {
+        	Shader.setPenColor(gl, Color.ORANGE);
         	portal2.drawPortal(gl);
         }
+        Shader.setPenColor(gl, Color.BLUE);
         for (int i = 0; i < MAXPARTICLES; i++) {
         	//rainDrop[i].draw(gl, person.getCam().getRotY()-180);
         	rainDrop[i].draw(gl, person.getCamera().getRotY()-180);
@@ -256,33 +259,57 @@ public class World extends Application3D implements KeyListener, MouseListener {
         	else { day = true; }
         	break;
 		}
-		Point3D tpFromPos;
-		if (person.isFps()) {
-			tpFromPos = person.getCamera().getPosition();
-		}
-		else  {
-			tpFromPos = person.getPosition();
-		}
+
 		if(portal.getPortal() && portal2.getPortal()) {
+			Point3D tpFromPos;
+			if (person.isFps()) {
+				tpFromPos = person.getCamera().getPosition();
+			}
+			else  {
+				tpFromPos = person.getPosition();
+			}
+
 			//If hit hits the first cube of the portal
 			if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
+				/*float rot = person.getCamera().getRotY() + 
+						(portal.getRotY() <= 0 ? -portal.getRotY() : 180 + portal.getRotY()
+						+ (portal2.getRotY() < 0 ? 180 + portal2.getRotY() : 180 - portal2.getRotY()));
 				
-				person.getCamera().setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
+				person.getCamera().setRotY(rot);*/
+				//person.rotateY(rot);
+				person.getCamera().setPosition(portal2.getPosition().translate(1.5f, 0, 0));
 				//camera.getPerson().setPosition(portal2.getPosition().translate(-1.5f, 0, -1.5f));
 			}
 			else if (portal.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
+				/*float rot = person.getCamera().getRotY() + 
+						(portal.getRotY() <= 0 ? -portal.getRotY() : 180 + portal.getRotY()
+						+ (portal2.getRotY() < 0 ? 180 + portal2.getRotY() : 180 - portal2.getRotY()));
 				
-				person.getCamera().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
+				person.getCamera().setRotY(rot);*/
+				//person.rotateY(rot);
+				person.getCamera().setPosition(portal2.getPosition().translate(-1.5f, 0, 0));
 				//camera.getPerson().setPosition(portal2.getPosition().translate(1.5f, 0, 1.5f));
 			}
 			if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 1) {
-				
-				person.getCamera().setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
+				/*float rot = person.getCamera().getRotY() + 
+						(portal2.getRotY() <= 0 ? -portal2.getRotY() : 180 + portal2.getRotY()
+						+ (portal.getRotY() < 0 ? 180 + portal.getRotY() : 180 - portal.getRotY()));
+
+				person.getCamera().setRotY(rot);*/
+				//person.rotateY(rot);
+				person.getCamera().setPosition(portal.getPosition().translate(1.5f, 0, 0));
 				//camera.getPerson().setPosition(portal.getPosition().translate(-1.5f, 0, -1.5f));
 			}
 			else if (portal2.onPortal(tpFromPos, portXTresh, portZTresh) == 2) {
+				/*float rot = person.getCamera().getRotY() + 
+						(portal2.getRotY() <= 0 ? -portal2.getRotY() : 180 + portal2.getRotY()
+						+ (portal.getRotY() < 0 ? 180 + portal.getRotY() : 180 - portal.getRotY()));
 				
-				person.getCamera().setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
+				person.getCamera().setRotY(rot);*/
+				//person.rotateY(rot);
+				person.getCamera().setPosition(portal.getPosition().translate(-1.5f, 0, 0));
+				
+				
 				//camera.getPerson().setPosition(portal.getPosition().translate(1.5f, 0, 1.5f));
 			}
 		}
@@ -357,7 +384,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		if(arg0.getButton() == MouseEvent.BUTTON1 && !portal.getPortal()) {
-			float dir = -5;
+			float dir = -2.5f;
   			double rads = Math.toRadians(person.getCamera().getRotY()); 
 			//double rads = Math.toRadians(camera.getRotY()); 
   			float dz = (float) (dir*Math.cos(rads));
@@ -367,9 +394,12 @@ public class World extends Application3D implements KeyListener, MouseListener {
 					camera.getPosition().getY(),
 					camera.getPosition().getZ() + dz);*/
 			portal.setPosition(person.getPosition().getX() + dx,
-					person.getPosition().getY() + person.getYOff(),
+					person.getTerrainY(
+							(person.getPosition().getX() + dx),
+							person.getPosition().getY() + person.getYOff(),
+							person.getPosition().getZ() + dz),
 					person.getPosition().getZ() + dz);
-			portal.setRotY(person.getCamera().getRotY() + 90);
+			//portal.setRotY(person.getCamera().getRotY() + 90);
 			//portal.setRotY(camera.getRotY() + 90);
 			portal.setPortal(true);
 		}
@@ -378,7 +408,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 		}
 		
 		if(arg0.getButton() == MouseEvent.BUTTON3 && !portal2.getPortal()) {
-			float dir = -5;
+			float dir = -2.5f;
 			double rads = Math.toRadians(person.getCamera().getRotY()); 
   			//double rads = Math.toRadians(camera.getRotY()); 
   			float dz = (float) (dir*Math.cos(rads));
@@ -389,7 +419,7 @@ public class World extends Application3D implements KeyListener, MouseListener {
 			portal2.setPosition(person.getPosition().getX() + dx,
 					person.getPosition().getY() + person.getYOff(),
 					person.getPosition().getZ() + dz);
-			portal2.setRotY(person.getCamera().getRotY() + 90);
+			//portal2.setRotY(person.getCamera().getRotY() + 90);
 			//portal2.setRotY(camera.getRotY() + 90);
 			portal2.setPortal(true);
 		} else if (arg0.getButton() == MouseEvent.BUTTON3) {
