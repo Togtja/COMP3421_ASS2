@@ -20,12 +20,12 @@ public class Portal extends WorldObject {
 	private Camera front;
 	private Camera back;
 	
-	//DEBUGGING
+	/*//DEBUGGING
 	Point3D p1;
 	Point3D p2;
 	Point3D p3;
 	Point3D p4;
-	//
+	//*/
 	
 	public Portal(WorldObject parent) throws IOException {
 		super(parent);
@@ -34,11 +34,13 @@ public class Portal extends WorldObject {
 		front = new Camera(parent);
 		back = new Camera(parent);
 		this.setRotY(0);
-		//DUBUG FOR PORTAL
+		//DEBUG FOR PORTAL
+		/*
 		p1 = new Point3D(0,0,0);
 		p2 = new Point3D(0,0,0);
 		p3 = new Point3D(0,0,0);
 		p4 = new Point3D(0,0,0);
+		*/
 		
 	}
 	
@@ -54,18 +56,6 @@ public class Portal extends WorldObject {
 				.translate(getPosition())
 				.scale(getScale(), getScale(), getScale()).rotateY(getRotY());
 		model.draw(gl, view);
-		p1.draw(gl,CoordFrame3D.identity());
-		p2.draw(gl,CoordFrame3D.identity());
-		p3.draw(gl,CoordFrame3D.identity());
-		p4.draw(gl,CoordFrame3D.identity());
-		Line3D line1 = new Line3D(p1,p2);
-		Line3D line2 = new Line3D(p2,p3);
-		Line3D line3 = new Line3D(p3,p4);
-		Line3D line4 = new Line3D(p4,p1);
-		line1.draw(gl);
-		line2.draw(gl);
-		line3.draw(gl);
-		line4.draw(gl);
 	}
 	public boolean getPortal() {
 		return isPortal;
@@ -75,7 +65,27 @@ public class Portal extends WorldObject {
 	}
 	
 	
-	public int onPortal(Point3D p, float dx, float dz) {
+	public int onPortal(Point3D p, float xTresh, float zTresh) {
+ 		float yTresh = 2f;
+ 		float x = getPosition().getX();
+ 		float y = getPosition().getY();
+ 		float z = getPosition().getZ();
+ 		
+ 		if ((x + xTresh > p.getX() && x < p.getX()) 
+				&& (y + yTresh > p.getY() && y - yTresh < p.getY())
+				&& (z + zTresh > p.getZ() && z < p.getZ())) {
+			System.out.println("Returned 1");
+			return 1; //Represtet portals as 2 cubes, this is first cube
+		}
+		else if ((x > p.getX() && x - xTresh < p.getX()) 
+				&& (y + yTresh > p.getY() && y - yTresh < p.getY())
+ 				&& (z > p.getZ() && z - zTresh < p.getZ())) {
+ 			System.out.println("Returned 2");
+ 			return 2; //Second cube
+ 		}
+ 
+		
+		/*
 		float yTresh = 2f;
 
 		float x = getPosition().getX();
@@ -159,7 +169,7 @@ public class Portal extends WorldObject {
 		float p4X = (float) (getPosition().getX() + d4*Math.sin(rads));
 		float p4Z = (float) (getPosition().getZ()+ d4*Math.cos(rads));
 		p1 = new Point3D(p4X, y, p4Z);
-	   	*/
+	   	
 		
 		if ((fullX >= p.getX() && x <= p.getX()) 
 				&& (y + yTresh >= p.getY() && y - yTresh < p.getY())
@@ -173,7 +183,7 @@ public class Portal extends WorldObject {
 			System.out.println("RETURN 2");
 			return 2; //Second cube
 		}
-
+*/
 		return 0;
 	}
 }
